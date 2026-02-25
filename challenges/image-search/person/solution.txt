@@ -1,1 +1,1 @@
-Substitution principle
+Liskov substitution principle
