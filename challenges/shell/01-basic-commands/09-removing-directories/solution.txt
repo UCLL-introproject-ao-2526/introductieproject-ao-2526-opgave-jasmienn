@@ -1,1 +1,1 @@
-rm -rf compromising-material
+rm -r compromising-material

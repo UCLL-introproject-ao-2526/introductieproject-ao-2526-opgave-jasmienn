@@ -1,1 +1,1 @@
-cp -a important-work backup
+cp -r important-work/* backup/

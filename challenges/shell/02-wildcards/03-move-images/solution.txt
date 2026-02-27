@@ -1,0 +1,1 @@
+mv *.PNG *.JPG images/
