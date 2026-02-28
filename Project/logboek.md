@@ -15,4 +15,6 @@ Tijd voor eigen werk. Ik bedenk eerst graag wat ik wil doen, om dan uit te vogel
 
 # 28/04  - 9u30
 Jack, Queen en King hebben nu een mooie kaart.
-
+Het ziet er nog altijd allemaal heel 'paint' uit. Voor tkinter bestaat ttk om het mooier te maken.
+Ik kom uit op PySimpleGUI, waar tkinter inzit. https://realpython.com/pysimplegui-python/ 
+Blijkbaar is het wel moeilijk om die te combineren, dus ik ga toch maar gewoon prutsen in pygame. 

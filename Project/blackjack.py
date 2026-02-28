@@ -17,12 +17,18 @@ WIDTH = 600
 HEIGHT = 900
 
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
-pygame.display.set_caption("Blackjack!")
+pygame.display.set_caption("color_blackjack!")
 fps = 60
 timer = pygame.time.Clock()
 
 font = pygame.font.Font("Project/FreeSansBold.ttf",44)
 font_small = pygame.font.Font("Project/FreeSansBold.ttf",32)
+
+color_black = "#1E1A1A"
+color_red = '#702D2D'
+color_white ="#C1AFAF"
+color_grey = "#726F6F"
+color_green = "#2B5B26"
 
 # setting deck & hands
 game_deck = copy.deepcopy(decks*one_deck)
@@ -34,7 +40,7 @@ reveal_dealer = False
 hand_active = False
 outcome = 0 
 add_score = False
-results = ['','player busted','You win', 'You lose', 'Draw']
+results = ['','You are busted','You win', 'You lose', 'Draw']
 
 # win loss push(draw)
 records = [0,0,0]
@@ -60,9 +66,9 @@ def deal_cards(current_hand, current_deck):
     return current_hand, current_deck
 
 def draw_scores(player,dealer):
-    screen.blit(font.render(f'Score[{player}]', True, 'white'), (350,400))
+    screen.blit(font.render(f'Score[{player}]', True, color_white), (350,400))
     if reveal_dealer:
-        screen.blit(font.render(f'Score[{dealer}]', True, 'white'),(350,100)) 
+        screen.blit(font.render(f'Score[{dealer}]', True, color_white),(350,100)) 
 
 def draw_figure_card(card, i,  x, y):
     #als J/Q/K > afbeelding
@@ -77,26 +83,26 @@ def draw_figure_card(card, i,  x, y):
 def draw_cards(player, dealer, reveal):
     
     for i in range(len(player)):
-        pygame.draw.rect(screen,'white', [card_x +(70*i), card_player_y + (5*i), 120,220], 0, 5 )
-        screen.blit(font.render(player[i], True, 'black'), (card_x + 10 +70*i, card_player_y + 5 +5*i))
-        screen.blit(font.render(player[i], True, 'black'), (card_x + 10 +70*i, card_player_y +115 +5*i))
-        pygame.draw.rect(screen,'red', [card_x +(70*i), 460 + (5*i),120,220], 5, 5 )
+        pygame.draw.rect(screen,color_white, [card_x +(70*i), card_player_y + (5*i), 120,220], 0, 5 )
+        screen.blit(font.render(player[i], True, color_black), (card_x + 10 +70*i, card_player_y + 5 +5*i))
+        screen.blit(font.render(player[i], True, color_black), (card_x + 10 +70*i, card_player_y +150 +5*i))
+        pygame.draw.rect(screen,color_black, [card_x +(70*i), 460 + (5*i),120,220], 5, 5 )
         #teken figuur op kaart
         draw_figure_card(player[i], i, card_x, card_player_y)
     
     # if player hasn't finished turn, dealer will hide one card.
     for i in range(len(dealer)):
-        pygame.draw.rect(screen,'white', [card_x +(70*i), card_dealer_y + (5*i), 120,220], 0, 5 )
+        pygame.draw.rect(screen,color_white, [card_x +(70*i), card_dealer_y + (5*i), 120,220], 0, 5 )
         if i != 0 or reveal:
-            screen.blit(font.render(dealer[i], True, 'black'), (card_x + 10 +70*i, card_dealer_y + 5 +5*i))
-            screen.blit(font.render(dealer[i], True, 'black'), (card_x + 10 +70*i, card_dealer_y + 115 +5*i))
+            screen.blit(font.render(dealer[i], True, color_black), (card_x + 10 +70*i, card_dealer_y + 5 +5*i))
+            screen.blit(font.render(dealer[i], True, color_black), (card_x + 10 +70*i, card_dealer_y + 150 +5*i))
             draw_figure_card(dealer[i], i, card_x, card_dealer_y)
             
         else:
-            screen.blit(font.render('???', True, 'black'), (card_x + 10 +70*i, card_dealer_y + 5 +5*i))
-            screen.blit(font.render('???', True, 'black'), (card_x + 10 +70*i, card_dealer_y + 115 +5*i))
+            screen.blit(font.render('???', True, color_black), (card_x + 10 +70*i, card_dealer_y + 5 +5*i))
+            screen.blit(font.render('???', True, color_black), (card_x + 10 +70*i, card_dealer_y + 150 +5*i))
         
-        pygame.draw.rect(screen,'blue', [70 +(70*i), 160 + (5*i),120,220], 5, 5 )
+        pygame.draw.rect(screen,color_black, [70 +(70*i), 160 + (5*i),120,220], 5, 5 )
 
 #get best score possible
 def calculate_score(hand):
@@ -125,36 +131,55 @@ def draw_game(act, records, result):
     button_list = []
     # initially on startup (not act). You can only deal
     if not act:
-        deal = pygame.draw.rect(screen, 'white', [150,20,300,100], 0, 5)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
-        pygame.draw.rect(screen, 'green', [150,20,300,100], 3, 5)             # grotere rechthoek > border in groen 
-        deal_text = font.render('DEAL HAND', True, 'black')
+        deal = pygame.draw.rect(screen, color_white, [150,20,300,100], 0, 5)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
+        pygame.draw.rect(screen, color_black, [150,20,300,100], 3, 5)             # grotere rechthoek > border in groen 
+        deal_text = font.render('DEAL HAND', True, color_black)
         screen.blit(deal_text, (165,50))
         button_list.append(deal)
 
     # Game started = hit & stand tonen + win/loss-record
     else:
-        hit = pygame.draw.rect(screen, 'white', [0,700,300,100], 0, 5)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
-        pygame.draw.rect(screen, 'green', [0,700,300,100], 3, 5)             # grotere rechthoek > border in groen 
-        hit_text = font.render('HIT ME', True, 'black')
+        hit = pygame.draw.rect(screen, color_white, [25,700,250,100], 0, 25)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
+        pygame.draw.rect(screen, color_black, [25,700,250,100], 3, 25)             # grotere rechthoek > border in groen 
+        hit_text = font.render('HIT ME', True, color_black)
         screen.blit(hit_text, (60,725))
         button_list.append(hit)
 
-        stand = pygame.draw.rect(screen, 'white', [300,700,300,100], 0, 5)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
-        pygame.draw.rect(screen, 'green', [300,700,300,100], 3, 5)             # grotere rechthoek > border in groen 
-        stand_text = font.render('STAND', True, 'black')
+        stand = pygame.draw.rect(screen, color_white, [325,700,250,100], 0, 25)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
+        pygame.draw.rect(screen, color_black, [325,700,250,100], 3, 25)             # grotere rechthoek > border in groen 
+        stand_text = font.render('STAND', True, color_black)
         screen.blit(stand_text, (360,725))
         button_list.append(stand)
 
-        score_text = font_small.render(f'Wins: {records[0]}   Losses: {records[1]}    Draws: {records[2]}', True, 'white')
+        score_text = font_small.render(f'Wins: {records[0]}   Losses: {records[1]}    Draws: {records[2]}', True, color_white)
         screen.blit(score_text,(15,840))
 
     # restart when done playing
     if result != 0:
-        screen.blit(font.render(results[result], True, 'white'), (15,25))
-        deal = pygame.draw.rect(screen, 'white', [150,220,300,100], 0, 5)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
-        pygame.draw.rect(screen, 'green', [150,220,300,100], 3, 5)  
-        pygame.draw.rect(screen, 'black', [154,224,294,94], 3, 5)           # grotere rechthoek > border in groen 
-        deal_text = font.render('DEAL AGAIN', True, 'black')
+        #tekst als je wint
+        if result== 1:
+            screen.blit(font.render(results[result], True, color_red), (20,25))
+            pygame.draw.rect(screen, color_red, [5,15,350,85], 8, 5)
+            pygame.draw.rect(screen, color_red, [5,15,350,85], 8, 5)
+        elif result == 2:
+            screen.blit(font.render(results[result], True, color_green), (20,25))
+            pygame.draw.rect(screen, color_green, [5,15,200,85], 8, 5)
+            pygame.draw.rect(screen, color_green, [5,15,200,85], 8, 5)
+        elif result == 3:
+            screen.blit(font.render(results[result], True, color_red), (20,25))
+            pygame.draw.rect(screen, color_red, [5,15,230,85], 8, 5)
+            pygame.draw.rect(screen, color_red, [5,15,230,85], 8, 5)
+        elif result == 4:
+            screen.blit(font.render(results[result], True, color_white), (20,25))
+            pygame.draw.rect(screen, color_white, [5,15,150,85], 8, 5)
+            pygame.draw.rect(screen, color_white, [5,15,150,85], 8, 5)
+        
+
+        #opnieuw spelen?
+        deal = pygame.draw.rect(screen, color_white, [150,220,300,100], 0, 5)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
+        pygame.draw.rect(screen, color_red, [150,220,300,100], 12, 5)  
+        pygame.draw.rect(screen, color_black, [154,224,294,94], 3, 5)           # grotere rechthoek > border in groen 
+        deal_text = font.render('DEAL AGAIN', True, color_black)
         screen.blit(deal_text, (165,250))
         button_list.append(deal)
 
@@ -189,7 +214,7 @@ run = True
 while run:
     # run the game at fps & fill screen with bg-color
     timer.tick(fps)
-    screen.fill('black')
+    screen.fill(color_grey)
     #initial deal
     if initial_deal:
         for i in range(2):
