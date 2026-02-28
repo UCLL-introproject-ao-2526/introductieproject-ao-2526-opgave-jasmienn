@@ -6,6 +6,10 @@ import pygame
 
 pygame.init()                           #nodig voor font
 
+#credits
+#Sound Effect by freesound_community from Pixabay
+#Afbeelding van OpenClipart-Vectors via Pixabay
+
 # VARIABLES
 
 cards = ['2','3','4', '5', '6', '7', '8', '9', '10','J','Q','K','A']
@@ -30,6 +34,9 @@ color_white ="#C1AFAF"
 color_grey = "#726F6F"
 color_green = "#2B5B26"
 
+success_sound = 'Project/Media/success.mp3'
+hitme_sound = 'Project/Media/hitme.mp3'
+
 # setting deck & hands
 game_deck = copy.deepcopy(decks*one_deck)
 initial_deal = True
@@ -47,10 +54,10 @@ records = [0,0,0]
 player_score = 0
 dealer_score = 0 
 
-# images
-jack_img = pygame.image.load("Project/Images/Jack.png")
-queen_img = pygame.image.load("Project/Images/Queen.png")
-king_img = pygame.image.load("Project/Images/King.png")
+# Media
+jack_img = pygame.image.load("Project/Media/Jack.png")
+queen_img = pygame.image.load("Project/Media/Queen.png")
+king_img = pygame.image.load("Project/Media/King.png")
 card_x = 70
 card_player_y = 460
 card_dealer_y = 160
@@ -59,6 +66,7 @@ card_dealer_y = 160
 
 # deal cards by selecting randomnly from deck
 def deal_cards(current_hand, current_deck):
+    
     card = random.randint(0,len(current_deck))
     current_hand.append(current_deck[card-1])
     current_deck.pop(card-1)
@@ -81,6 +89,7 @@ def draw_figure_card(card, i,  x, y):
 
 # draw cards visueel op scherm
 def draw_cards(player, dealer, reveal):
+    
     
     for i in range(len(player)):
         pygame.draw.rect(screen,color_white, [card_x +(70*i), card_player_y + (5*i), 120,220], 0, 5 )
@@ -127,29 +136,36 @@ def calculate_score(hand):
 
 
 # conditions en buttons voor draw game
-def draw_game(act, records, result):
+def draw_game(act, records, result, hand_act):
     button_list = []
     # initially on startup (not act). You can only deal
     if not act:
-        deal = pygame.draw.rect(screen, color_white, [150,20,300,100], 0, 5)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
-        pygame.draw.rect(screen, color_black, [150,20,300,100], 3, 5)             # grotere rechthoek > border in groen 
+        deal = pygame.draw.rect(screen, color_white, [150,20,300,100], 0, 25)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
+        pygame.draw.rect(screen, color_black, [150,20,300,100], 8, 25)             # grotere rechthoek > border in groen 
         deal_text = font.render('DEAL HAND', True, color_black)
-        screen.blit(deal_text, (165,50))
+        screen.blit(deal_text, (170,45))
         button_list.append(deal)
 
     # Game started = hit & stand tonen + win/loss-record
     else:
+        if hand_act:
+            hit_text = font.render('HIT ME', True, color_black)
+            stand_text = font.render('STAND', True, color_black)
+        else:
+            hit_text = font.render('HIT ME', True, color_grey)
+            stand_text = font.render('STAND', True, color_grey)
+
         hit = pygame.draw.rect(screen, color_white, [25,700,250,100], 0, 25)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
         pygame.draw.rect(screen, color_black, [25,700,250,100], 3, 25)             # grotere rechthoek > border in groen 
-        hit_text = font.render('HIT ME', True, color_black)
-        screen.blit(hit_text, (60,725))
+        screen.blit(hit_text, (65,720))
         button_list.append(hit)
 
         stand = pygame.draw.rect(screen, color_white, [325,700,250,100], 0, 25)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
         pygame.draw.rect(screen, color_black, [325,700,250,100], 3, 25)             # grotere rechthoek > border in groen 
-        stand_text = font.render('STAND', True, color_black)
-        screen.blit(stand_text, (360,725))
+        screen.blit(stand_text, (375,720))
         button_list.append(stand)
+        
+
 
         score_text = font_small.render(f'Wins: {records[0]}   Losses: {records[1]}    Draws: {records[2]}', True, color_white)
         screen.blit(score_text,(15,840))
@@ -158,29 +174,29 @@ def draw_game(act, records, result):
     if result != 0:
         #tekst als je wint
         if result== 1:
+            pygame.draw.rect(screen, color_white, [5,15,350,85], 0, 5)
+            pygame.draw.rect(screen, color_red, [5,15,350,85], 8, 5)
             screen.blit(font.render(results[result], True, color_red), (20,25))
-            pygame.draw.rect(screen, color_red, [5,15,350,85], 8, 5)
-            pygame.draw.rect(screen, color_red, [5,15,350,85], 8, 5)
         elif result == 2:
+            pygame.draw.rect(screen, color_white, [5,15,200,85], 0, 5)
+            pygame.draw.rect(screen, color_green, [5,15,200,85], 8, 5)
             screen.blit(font.render(results[result], True, color_green), (20,25))
-            pygame.draw.rect(screen, color_green, [5,15,200,85], 8, 5)
-            pygame.draw.rect(screen, color_green, [5,15,200,85], 8, 5)
         elif result == 3:
+            pygame.draw.rect(screen, color_white, [5,15,230,85], 0, 5)
+            pygame.draw.rect(screen, color_red, [5,15,230,85], 8, 5)
             screen.blit(font.render(results[result], True, color_red), (20,25))
-            pygame.draw.rect(screen, color_red, [5,15,230,85], 8, 5)
-            pygame.draw.rect(screen, color_red, [5,15,230,85], 8, 5)
         elif result == 4:
-            screen.blit(font.render(results[result], True, color_white), (20,25))
-            pygame.draw.rect(screen, color_white, [5,15,150,85], 8, 5)
-            pygame.draw.rect(screen, color_white, [5,15,150,85], 8, 5)
+            pygame.draw.rect(screen, color_white, [5,15,150,85], 0, 5)
+            pygame.draw.rect(screen, color_black, [5,15,150,85], 8, 5)
+            screen.blit(font.render(results[result], True, color_black), (20,25))
+            
         
 
         #opnieuw spelen?
-        deal = pygame.draw.rect(screen, color_white, [150,220,300,100], 0, 5)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
-        pygame.draw.rect(screen, color_red, [150,220,300,100], 12, 5)  
-        pygame.draw.rect(screen, color_black, [154,224,294,94], 3, 5)           # grotere rechthoek > border in groen 
+        deal = pygame.draw.rect(screen, color_white, [150,220,300,100], 0, 25)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
+        pygame.draw.rect(screen, color_black, [150,220,300,100], 8, 25)  
         deal_text = font.render('DEAL AGAIN', True, color_black)
-        screen.blit(deal_text, (165,250))
+        screen.blit(deal_text, (165,245))
         button_list.append(deal)
 
     return button_list
@@ -196,10 +212,13 @@ def check_endgame(hand_act,deal_score,play_score,result,totals, add):
             result = 3
         else:
             result = 4
+
         if add:
             if result == 1 or result == 3:
                 totals[1] += 1
             elif result == 2:
+                pygame.mixer.music.load(success_sound)
+                pygame.mixer.music.play()
                 totals[0] += 1
             else:
                 totals[2] += 1
@@ -217,6 +236,7 @@ while run:
     screen.fill(color_grey)
     #initial deal
     if initial_deal:
+        
         for i in range(2):
             my_hand, game_deck = deal_cards(my_hand, game_deck)
             dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
@@ -231,7 +251,7 @@ while run:
         draw_cards(my_hand, dealer_hand, reveal_dealer)
         draw_scores(player_score, dealer_score)
 
-    buttons = draw_game(active, records, outcome)
+    buttons = draw_game(active, records, outcome, hand_active)
 
     # event handling
     for event in pygame.event.get():
@@ -253,6 +273,8 @@ while run:
             else:
                 #you can hit
                 if buttons[0].collidepoint(event.pos) and player_score < 21 and hand_active:
+                    pygame.mixer.music.load(hitme_sound)
+                    pygame.mixer.music.play()
                     my_hand, game_deck = deal_cards(my_hand,game_deck)
                 #you can stand
                 elif buttons[1].collidepoint(event.pos) and not reveal_dealer:
