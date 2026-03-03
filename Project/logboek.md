@@ -50,7 +50,16 @@ Dit was het niet..
 https://www.youtube.com/watch?v=sfniTyS9yHo 
 
 ## 21.00
-Het was toch anders dan in het filmpje, omdat ik het niet met een key wou doen. 
-Ondertussen is het ongeveer gelukt bij de initial deal.
+Het was toch anders dan in het filmpje, omdat ik het niet met een key deed. 
+Met de hulp van Lumo is het toch gelukt. 
+Je scherm 60 keer per seconde wordt gerefresht, dus worden je kaarten steeds opnieuw getekend. 
+Je moet ze dus telkens een beetje hoger tekenen tot ze staan waar je ze wil (target).
 
+De keys vind ik wel interessant, dus ga ik het spel speelbaar maken zonder muis:
+- H(it)
+- S(tand)
+- Enter (deal)
+
+## 21.30
+Het is gelukt, maar nu heb ik dubbele code. Volgende stap: code opruimen. 
 

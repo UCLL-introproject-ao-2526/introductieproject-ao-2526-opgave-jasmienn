@@ -16,7 +16,7 @@ pygame.init()                           #nodig voor font
 
 # VARIABLES
 
-# e = diamond, q = spade, r = heart, w = club
+# e = diamond, q = spade, r = heart, w = club (dit komt door het lettertype)
 one_deck = [
     ['2','r'], ['3','r'], ['4','r'], ['5','r'], ['6','r'], ['7','r'], ['8','r'], ['9','r'], ['10','r'], ['J','r'], ['Q','r'], ['K','r'], ['A','r'],
     ['2','q'], ['3','q'], ['4','q'], ['5','q'], ['6','q'], ['7','q'], ['8','q'], ['9','q'], ['10','q'], ['J','q'], ['Q','q'], ['K','q'], ['A','q'],
@@ -73,10 +73,29 @@ king_img = pygame.image.load("Project/Media/King.png")
 card_x = 70
 card_player_y = 1000
 card_dealer_y = 1000
-card_speed = 1
+card_speed = 0.3
 deal = True
 
+
+
 # FUNCTIONS
+def reset_game():
+    global game_deck, initial_deal, my_hand, dealer_hand, active, reveal_dealer, hand_active, outcome, add_score, results, dealer_score, player_score, card_player_y, card_dealer_y
+    # set variables
+    active = True
+    initial_deal = True                     # two cards
+    game_deck = copy.deepcopy(decks*one_deck)       # making an original deck. 
+    my_hand = []
+    dealer_hand = []
+    outcome = 0
+    hand_active = True
+    add_score = True
+    reveal_dealer = False
+    dealer_score = 0
+    player_score = 0
+    # reset cards naar outside 
+    card_player_y = 1000
+    card_dealer_y = 1000
 
 # deal cards by selecting randomnly from deck
 def deal_cards(current_hand, current_deck):
@@ -233,7 +252,6 @@ def draw_game(act, records, result, hand_act):
         deal_text = font.render('DEAL AGAIN', True, color_black)
         screen.blit(deal_text, (165,245))
         button_list.append(deal)
-
     return button_list
 
 def check_endgame(hand_act,deal_score,play_score,result,totals, add):
@@ -258,6 +276,7 @@ def check_endgame(hand_act,deal_score,play_score,result,totals, add):
             else:
                 totals[2] += 1
             add = False
+   
     return result, totals, add
 
         
@@ -294,21 +313,13 @@ while run:
 
     # event handling
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:               #quit = stop programma
+        if event.type == pygame.QUIT:               #quit = stop programm
             run = False
 
         if event.type == pygame.MOUSEBUTTONUP:               #start game bij klik op Deal
-            if not active:
+            if not active:                                   # er is maar 1 rectangle
                 if buttons[0].collidepoint(event.pos):
-                    # set variables
-                    active = True
-                    initial_deal = True                     # two cards
-                    game_deck = copy.deepcopy(decks*one_deck)       # making an original deck. 
-                    my_hand = []
-                    dealer_hand = []
-                    outcome = 0
-                    hand_active = True
-                    add_score = True
+                    reset_game()
             else:
                 #you can hit
                 if buttons[0].collidepoint(event.pos) and player_score < 21 and hand_active:
@@ -321,18 +332,22 @@ while run:
                     hand_active = False
                 elif len(buttons) == 3:
                     if buttons[2].collidepoint(event.pos):
-                        # set variables
-                        active = True
-                        initial_deal = True                     # two cards
-                        game_deck = copy.deepcopy(decks*one_deck)       # making an original deck. 
-                        my_hand = []
-                        dealer_hand = []
-                        outcome = 0
-                        hand_active = True
-                        add_score = True
-                        reveal_dealer = False
-                        dealer_score = 0
-                        player_score = 0
+                       reset_game()
+
+        if event.type == pygame.KEYDOWN:               #start game bij klik op Deal
+            if event.key == pygame.K_RETURN:
+                    reset_game()
+            else:
+                #you can hit
+                if event.key == pygame.K_h and player_score < 21 and hand_active:
+                    pygame.mixer.music.load(hitme_sound)
+                    pygame.mixer.music.play()
+                    my_hand, game_deck = deal_cards(my_hand,game_deck)
+                #you can stand
+                elif event.key == pygame.K_s and not reveal_dealer:
+                    reveal_dealer = True
+                    hand_active = False
+                
 
     #check ending
     if hand_active and player_score >= 21:
