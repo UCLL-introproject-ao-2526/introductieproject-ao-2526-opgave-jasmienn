@@ -62,4 +62,14 @@ De keys vind ik wel interessant, dus ga ik het spel speelbaar maken zonder muis:
 
 ## 21.30
 Het is gelukt, maar nu heb ik dubbele code. Volgende stap: code opruimen. 
+Ik heb al regelmatig met klassen gewerkt, maar ik snap er het fijne nog niet van. Daarom kies ik om dit te oefenen.
+Ik zal beginnen met een klasse Card, omdat ik daarvan de logica snap. Je maakt een 'blauwdruk' van kaart en kan die telkens opnieuw oproepen.
+Als je dan de kaart breder of hoger wil maken, kan dit op één plaats.
+Met Card(//) kan je dan een kaart tekenen
+
+## 22.15
+De class Card is gelukt. 
+Volgende keer:
+- class Hand maken (de kaarten die een persoon heeft)
+- class Button maken (zodat ze er ook altijd hetzelfde kunnen uitzien)
 

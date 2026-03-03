@@ -67,17 +67,44 @@ player_score = 0
 dealer_score = 0 
 
 # Media
-jack_img = pygame.image.load("Project/Media/Jack.png")
-queen_img = pygame.image.load("Project/Media/Queen.png")
-king_img = pygame.image.load("Project/Media/King.png")
-card_x = 70
 card_player_y = 1000
 card_dealer_y = 1000
 card_speed = 0.3
 deal = True
 
+class Card:
+    width = 120
+    height = 220
+    x_pos = 70
+    jack_img = pygame.image.load("Project/Media/Jack.png")
+    queen_img = pygame.image.load("Project/Media/Queen.png")
+    king_img = pygame.image.load("Project/Media/King.png")
+    def __init__(self, card_value, symbol, card_number,y_pos):
+        self.symbol = symbol
+        self.card_value = card_value
+        self.card_number = card_number
+        self.y_pos = y_pos
 
-
+    def draw_figure_card(self):
+        if self.symbol == 'J':
+            screen.blit(self.jack_img, ((self.x_pos + 5 +70*self.card_number, self.y_pos + 10 + 5*self.card_number)))
+        elif self.symbol == 'Q':
+            screen.blit(self.queen_img, ((self.x_pos + 5 + 70*self.card_number, self.y_pos + 10 + 5*self.card_number)))
+        elif self.symbol == 'K':
+            screen.blit(self.king_img, ((self.x_pos + 5 + 70*self.card_number, self.y_pos + 10 + 5*self.card_number)))
+    
+    def draw_card(self):
+        pygame.draw.rect(screen,color_white, [self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number), self.width, self.height], 0, 5 )
+        if self.card_value in ['e','r']:
+            screen.blit(font.render(self.card_value, True, color_red), (self.x_pos + 10 + 70* self.card_number, self.y_pos + 5 + 5*self.card_number))
+            screen.blit(font_symbol.render(self.symbol, True, color_red), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 145 + 5*self.card_number))
+        else:
+            screen.blit(font.render(self.card_value, True, color_black), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 5 + 5*self.card_number))
+            screen.blit(font_symbol.render(self.symbol, True, color_black), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 145 + 5*self.card_number))
+        pygame.draw.rect(screen, color_black, [self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number), self.width, self.height], 5, 5 )
+        self.draw_figure_card()
+        
+    
 # FUNCTIONS
 def reset_game():
     global game_deck, initial_deal, my_hand, dealer_hand, active, reveal_dealer, hand_active, outcome, add_score, results, dealer_score, player_score, card_player_y, card_dealer_y
@@ -111,62 +138,34 @@ def draw_scores(player,dealer):
     if reveal_dealer:
         screen.blit(font.render(f'Score[{dealer}]', True, color_white),(350,100)) 
 
-def draw_figure_card(card, i,  x, y):
-    #als J/Q/K > afbeelding
-    if card[0] == 'J':
-        screen.blit(jack_img, ((x + 5 +70*i, y + 10 +5*i)))
-    elif card[0] == 'Q':
-        screen.blit(queen_img, ((x + 5 + 70*i, y+ 10 + 5*i)))
-    elif card[0] == 'K':
-        screen.blit(king_img, ((x + 5 + 70*i, y+ 10 +5*i)))
-
 def move_cards():
     global card_player_y, card_dealer_y
     target_player_y = 460
     target_dealer_y = 160
     
-
     if card_player_y > target_player_y:
        card_player_y += card_speed * -54
     if card_dealer_y > target_dealer_y:
         card_dealer_y += card_speed * -84
 
+    else: 
+        draw_scores(player_score, dealer_score)
 
-    
 
 # draw cards visueel op scherm
 def draw_cards(player, dealer, reveal):
     
     for i in range(len(player)):
-        pygame.draw.rect(screen,color_white, [card_x +(70*i), card_player_y + (5*i), 120,220], 0, 5 )
-        if player[i][1] in ['e','r']:
-            screen.blit(font.render(player[i][0], True, color_red), (card_x + 10 +70*i, card_player_y + 5 +5*i))
-            screen.blit(font_symbol.render(player[i][1], True, color_red), (card_x + 10 +70*i, card_player_y + 145 +5*i))
-        else:
-            screen.blit(font.render(player[i][0], True, color_black), (card_x + 10 +70*i, card_player_y + 5 +5*i))
-            screen.blit(font_symbol.render(player[i][1], True, color_black), (card_x + 10 +70*i, card_player_y + 145 +5*i))
-        pygame.draw.rect(screen, color_black, [card_x +(70*i), card_player_y + (5*i),120,220], 5, 5 )
-        #teken figuur op kaart
-        draw_figure_card(player[i], i, card_x, card_player_y)
+        card = Card(player[i][0], player[i][1], i, card_player_y)
+        Card.draw_card(card)
     
     # if player hasn't finished turn, dealer will hide one card.
     for i in range(len(dealer)):
-        pygame.draw.rect(screen,color_white, [card_x +(70*i), card_dealer_y + (5*i), 120,220], 0, 5 )
         if i != 0 or reveal:
-            if dealer[i][1] in ['e','r']:
-                screen.blit(font.render(dealer[i][0], True, color_red), (card_x + 10 +70*i, card_dealer_y + 5 +5*i))
-                screen.blit(font_symbol.render(dealer[i][1], True, color_red), (card_x + 10 +70*i, card_dealer_y + 145 +5*i))
-            else:
-                screen.blit(font.render(dealer[i][0], True, color_black), (card_x + 10 +70*i, card_dealer_y + 5 +5*i))
-                screen.blit(font_symbol.render(dealer[i][1], True, color_black), (card_x + 10 +70*i, card_dealer_y + 145 +5*i))
-
-            draw_figure_card(dealer[i], i, card_x, card_dealer_y)
-            
+            card = Card(dealer[i][0], dealer[i][1], i, card_dealer_y)
         else:
-            screen.blit(font.render('???', True, color_black), (card_x + 10 +70*i, card_dealer_y + 5 +5*i))
-            screen.blit(font.render('???', True, color_black), (card_x + 10 +70*i, card_dealer_y + 150 +5*i))
-        
-        pygame.draw.rect(screen,color_black, [70 +(70*i), card_dealer_y + (5*i),120,220], 5, 5 )
+            card = Card("??", None, i, card_dealer_y)
+        Card.draw_card(card)
         
 
 #get best score possible
@@ -243,8 +242,6 @@ def draw_game(act, records, result, hand_act):
             pygame.draw.rect(screen, color_white, [5,15,150,85], 0, 5)
             pygame.draw.rect(screen, color_black, [5,15,150,85], 8, 5)
             screen.blit(font.render(results[result], True, color_black), (20,25))
-            
-        
 
         #opnieuw spelen?
         deal = pygame.draw.rect(screen, color_white, [150,220,300,100], 0, 25)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
@@ -307,7 +304,7 @@ while run:
         draw_cards(my_hand, dealer_hand, reveal_dealer)
         move_cards()
     
-    draw_scores(player_score, dealer_score)
+    
 
     buttons = draw_game(active, records, outcome, hand_active)
 
@@ -335,8 +332,9 @@ while run:
                        reset_game()
 
         if event.type == pygame.KEYDOWN:               #start game bij klik op Deal
-            if event.key == pygame.K_RETURN:
-                    reset_game()
+            if not active or len(buttons) == 3:
+                if event.key == pygame.K_RETURN:
+                        reset_game()
             else:
                 #you can hit
                 if event.key == pygame.K_h and player_score < 21 and hand_active:
