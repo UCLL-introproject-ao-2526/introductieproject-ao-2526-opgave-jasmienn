@@ -1,6 +1,6 @@
 Totaal: 
 Tutorial: 2u
-Updating: 3u30
+Updating: 8u
 
 # 22/02
 
@@ -43,7 +43,7 @@ Ik heb de vier symbolen toegevoegd op de kaarten via een lettertype.
 Dit was maar een halfuurtje werk, minder dan verwacht. 
 Volgende keer ga ik proberen om de kaarten ook zichtbaar uit te delen, dus via transform. 
 
-# 03/03
+# 03/03 (3u)
 ## 19.30
 Ik wil graag dat de kaarten 'binnenvliegen'. https://www.youtube.com/watch?v=DWRjdrGaADg 
 Dit was het niet.. 
@@ -67,9 +67,18 @@ Ik zal beginnen met een klasse Card, omdat ik daarvan de logica snap. Je maakt e
 Als je dan de kaart breder of hoger wil maken, kan dit op één plaats.
 Met Card(//) kan je dan een kaart tekenen
 
-## 22.15
+## 22.30
 De class Card is gelukt. 
 Volgende keer:
-- class Hand maken (de kaarten die een persoon heeft)
 - class Button maken (zodat ze er ook altijd hetzelfde kunnen uitzien)
 
+# 04/03 (1u30)
+## 19.45
+## 20.15
+Ik heb een class Buttons gemaakt. Ik zoek nu om de scores extern op te slaan. 
+probleem: alles refresht voortdurend, maar het lijkt me heftig om 60x/s op te slaan. 
+Dus het mag enkel opslaan als het spel gedaan is en de score verandert. 
+
+## 21.15
+De scores worden extern opgeslagen en opgehaald. Als je op reset klikt, komen deze weer op 0 te staan. 
+Hier moet evt. nog een waarschuwing bij.

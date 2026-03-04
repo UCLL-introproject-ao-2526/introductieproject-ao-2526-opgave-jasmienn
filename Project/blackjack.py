@@ -72,9 +72,32 @@ card_dealer_y = 1000
 card_speed = 0.3
 deal = True
 
+
+
+class Button:
+    width = 230
+    height = 100
+    def __init__(self, name, act, x, y):
+        self.name = name
+        self.act = act
+        self.x = x
+        self.y = y
+    
+    def draw_button(self):
+        if self.act:
+            color = color_black
+        else:
+            color = color_grey
+        button_name = pygame.draw.rect(screen, color_white, [self.x, self.y, self.width, self.height], 0, 25)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
+        pygame.draw.rect(screen, color_black, [self.x, self.y, self.width, self.height], 8, 25)             # grotere rechthoek > border in groen 
+        text = font.render(self.name, True, color)
+        screen.blit(text, (self.x + 35, self.y + 25))
+        return button_name
+
 class Card:
     width = 120
     height = 220
+    card_radius = 15
     x_pos = 70
     jack_img = pygame.image.load("Project/Media/Jack.png")
     queen_img = pygame.image.load("Project/Media/Queen.png")
@@ -94,14 +117,14 @@ class Card:
             screen.blit(self.king_img, ((self.x_pos + 5 + 70*self.card_number, self.y_pos + 10 + 5*self.card_number)))
     
     def draw_card(self):
-        pygame.draw.rect(screen,color_white, [self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number), self.width, self.height], 0, 5 )
+        pygame.draw.rect(screen,color_white, [self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number), self.width, self.height], 0, self.card_radius )
         if self.card_value in ['e','r']:
             screen.blit(font.render(self.card_value, True, color_red), (self.x_pos + 10 + 70* self.card_number, self.y_pos + 5 + 5*self.card_number))
             screen.blit(font_symbol.render(self.symbol, True, color_red), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 145 + 5*self.card_number))
         else:
             screen.blit(font.render(self.card_value, True, color_black), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 5 + 5*self.card_number))
             screen.blit(font_symbol.render(self.symbol, True, color_black), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 145 + 5*self.card_number))
-        pygame.draw.rect(screen, color_black, [self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number), self.width, self.height], 5, 5 )
+        pygame.draw.rect(screen, color_black, [self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number), self.width, self.height], 5, self.card_radius )
         self.draw_figure_card()
         
     
@@ -151,7 +174,6 @@ def move_cards():
     else: 
         draw_scores(player_score, dealer_score)
 
-
 # draw cards visueel op scherm
 def draw_cards(player, dealer, reveal):
     
@@ -167,7 +189,6 @@ def draw_cards(player, dealer, reveal):
             card = Card("??", None, i, card_dealer_y)
         Card.draw_card(card)
         
-
 #get best score possible
 def calculate_score(hand):
     #calculate hand score fresh every time. check Aces
@@ -186,42 +207,35 @@ def calculate_score(hand):
         for i in range(aces_count):
             if hand_score > 21:
                 hand_score-=10
-    
     return hand_score
-
 
 # conditions en buttons voor draw game
 def draw_game(act, records, result, hand_act):
     button_list = []
     # initially on startup (not act). You can only deal
     if not act:
-        deal = pygame.draw.rect(screen, color_white, [150,20,300,100], 0, 25)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
-        pygame.draw.rect(screen, color_black, [150,20,300,100], 8, 25)             # grotere rechthoek > border in groen 
-        deal_text = font.render('DEAL HAND', True, color_black)
-        screen.blit(deal_text, (170,45))
+        deal = Button.draw_button(Button("START", True, 150, 20))
         button_list.append(deal)
 
     # Game started = hit & stand tonen + win/loss-record
     else:
         if hand_act:
-            hit_text = font.render('HIT ME', True, color_black)
-            stand_text = font.render('STAND', True, color_black)
+            hit = Button.draw_button(Button("HIT ME", True, 25, 700))
+            stand = Button.draw_button(Button("STAND", True, 325, 700))
         else:
-            hit_text = font.render('HIT ME', True, color_grey)
-            stand_text = font.render('STAND', True, color_grey)
-
-        hit = pygame.draw.rect(screen, color_white, [25,700,250,100], 0, 25)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
-        pygame.draw.rect(screen, color_black, [25,700,250,100], 3, 25)             # grotere rechthoek > border in groen 
-        screen.blit(hit_text, (65,720))
+            hit = Button.draw_button(Button("HIT ME", False, 25, 700))
+            stand = Button.draw_button(Button("STAND", False, 325, 700))
         button_list.append(hit)
-
-        stand = pygame.draw.rect(screen, color_white, [325,700,250,100], 0, 25)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
-        pygame.draw.rect(screen, color_black, [325,700,250,100], 3, 25)             # grotere rechthoek > border in groen 
-        screen.blit(stand_text, (375,720))
         button_list.append(stand)
         
         score_text = font_small.render(f'Wins: {records[0]}   Losses: {records[1]}    Draws: {records[2]}', True, color_white)
         screen.blit(score_text,(15,840))
+
+        # reset score
+        reset = pygame.draw.rect(screen, color_grey, [540,840,30,30], 0, 0)
+        reset_img = pygame.image.load("Project/Media/reset.png")
+        screen.blit(reset_img, (540, 840))
+        button_list.append(reset)
 
     # restart when done playing
     if result != 0:
@@ -244,14 +258,12 @@ def draw_game(act, records, result, hand_act):
             screen.blit(font.render(results[result], True, color_black), (20,25))
 
         #opnieuw spelen?
-        deal = pygame.draw.rect(screen, color_white, [150,220,300,100], 0, 25)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
-        pygame.draw.rect(screen, color_black, [150,220,300,100], 8, 25)  
-        deal_text = font.render('DEAL AGAIN', True, color_black)
-        screen.blit(deal_text, (165,245))
+        deal = Button.draw_button(Button(" DEAL", True, 150, 220))
         button_list.append(deal)
+
     return button_list
 
-def check_endgame(hand_act,deal_score,play_score,result,totals, add):
+def check_endgame(hand_act, deal_score, play_score, result, totals, add):
     # 1: busted 2: win 3: lose 4: draw
     if not hand_act and deal_score >= 17:
         if play_score > 21:
@@ -273,19 +285,31 @@ def check_endgame(hand_act,deal_score,play_score,result,totals, add):
             else:
                 totals[2] += 1
             add = False
-   
+
+    # Als score verschilt van opgeslagen scores: update.        
+    with open("Project/scores.txt", "r") as f:
+        records = f.read().splitlines()
+        records = [int(i) for i in records]
+    if records != totals:
+        with open("Project/scores.txt", "w") as f:
+            for i in totals:
+                f.write(str(i)+"\n")
+
     return result, totals, add
 
-        
 
 # MAIN GAME LOOP 
 
 run = True
+# haal records op
+with open("Project/scores.txt", "r") as f:
+    records = f.read().splitlines()
+    records = [int(i) for i in records]
+
 while run:
     # run the game at fps & fill screen with bg-color
     timer.tick(fps)
     screen.fill(color_grey)
-
 
     #initial deal
     if initial_deal:
@@ -304,8 +328,6 @@ while run:
         draw_cards(my_hand, dealer_hand, reveal_dealer)
         move_cards()
     
-    
-
     buttons = draw_game(active, records, outcome, hand_active)
 
     # event handling
@@ -317,6 +339,8 @@ while run:
             if not active:                                   # er is maar 1 rectangle
                 if buttons[0].collidepoint(event.pos):
                     reset_game()
+                    pygame.mixer.music.load(hitme_sound)
+                    pygame.mixer.music.play()
             else:
                 #you can hit
                 if buttons[0].collidepoint(event.pos) and player_score < 21 and hand_active:
@@ -327,13 +351,26 @@ while run:
                 elif buttons[1].collidepoint(event.pos) and not reveal_dealer:
                     reveal_dealer = True
                     hand_active = False
-                elif len(buttons) == 3:
-                    if buttons[2].collidepoint(event.pos):
-                       reset_game()
+                #you can reset
+                elif buttons[2].collidepoint(event.pos):
+                    with open("Project/scores.txt", "w") as f:
+                        for i in range(3):
+                            f.write("0\n")
+                    with open("Project/scores.txt", "r") as f:
+                        records = f.read().splitlines()
+                        records = [int(i) for i in records]
 
-        if event.type == pygame.KEYDOWN:               #start game bij klik op Deal
-            if not active or len(buttons) == 3:
+                elif len(buttons) == 4:
+                    if buttons[3].collidepoint(event.pos):
+                        pygame.mixer.music.load(hitme_sound)
+                        pygame.mixer.music.play()
+                        reset_game()
+
+        if event.type == pygame.KEYDOWN:               #start game bij enter
+            if not active or len(buttons) == 4:
                 if event.key == pygame.K_RETURN:
+                        pygame.mixer.music.load(hitme_sound)
+                        pygame.mixer.music.play()
                         reset_game()
             else:
                 #you can hit
@@ -353,7 +390,6 @@ while run:
         reveal_dealer = True
 
     outcome, records, add_score = check_endgame(hand_active, dealer_score, player_score,outcome, records, add_score)
-
     pygame.display.flip()       
 
 
