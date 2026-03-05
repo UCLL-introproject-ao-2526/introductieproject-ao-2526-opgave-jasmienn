@@ -1,1 +1,1 @@
-mv liliana.jpg isidoro.png Images/
+mv isidoro.png liliana.jpg Images/

@@ -5,7 +5,7 @@ Dag Daan,
 Allereerst wil ik je hartelijk bedanken voor deze cursus en alle tijd die je erin hebt gestoken. 
 Het is fijn om aan een cursus te beginnen en meteen gerustgesteld te worden dat je er niet alleen voor staat. 
 Het is nog fijner dat je dit ook in praktijk omzet. 
-Dit was een rode draad door deze opo. Ook waardeer ik dat mijn input wordt gevraagd, zodat de cursus voor toekomstige studenten nog beter wordt. 
+De nabijheid van de docent was voelbaar doorheen de opo. Ook waardeer ik dat mijn input wordt gevraagd, zodat de cursus voor toekomstige studenten nog beter wordt. 
 
 Er waren voor mij enkele obstakels om te kunnen beginnen. Ik ben heel dankbaar dat je zo bereikbaar bent en snel en helder communiceert.
 
@@ -25,7 +25,11 @@ Ik ga even de verschillende opdrachten overlopen:
 	Fantastisch om ons de keuzevrijheid te geven. Dit motiveerde me. 
 	Een nadeel hieraan is dat het gemakkelijk is om een vraag te skippen als die te veel moeite kostte of als het antwoord niet geaccepteerd werd.
 	In plaats van verder te zoeken, kon ik naar een andere vraag gaan. Je lost dit al deels op door studenten een verplichte vraag te laten stellen. 
-	Er ligt zeker ook verantwoordelijheid bij de student om nieuwsgierig en leergierig te zijn. 
+	Er ligt zeker ook verantwoordelijheid bij de student om nieuwsgierig en leergierig te zijn.
+
+	Daarnaast is het zeer frustrerend om niet te kunnen ontdekken waar mijn fout zit. 
+	Het is moeilijk om te leren van mijn fouten als ik het juiste antwoord niet kan achterhalen. 
+	Misschien is er een optie om de solutionfiles te verkrijgen eens je aan 60/120 zit? Of meer feedback in de testing?
 
 
  3) Het project:
@@ -35,12 +39,17 @@ Ik ga even de verschillende opdrachten overlopen:
 
 Ik vond dit vak zeer zinvol. De combinatie van de kleine challenges en het grote project is afwisselend en aangenaam. 
 De keuzevrijheid maakt het een heel aangenaam vak. Als docent was je heel bereikbaar en communiceer je snel en helder. 
-Ik vind het vak goed zoals het nu is, maar als ik twee zaken zou veranderen, zou het dit zijn: 
+Ik vind het vak goed zoals het nu is, maar als ik drie zaken zou veranderen, zou het dit zijn: 
 1) extra uitleg bij de keuze van de filmpjes.
-2) een spellingchecker op de documentatie
+2) een mogelijkheid om de solutions van de challenges in te kijken.
+3) een spellingchecker op de documentatie.
 
 
 Als er nog toelichting nodig is of verdere vragen zijn, hoor ik het graag.
 Met hele vriendelijke groet,
 Jasmien
 
+Bijlage: Challenges waarvan ik overtuigd ben dat ze juist zijn
+challenges\information-theory\04-multimedia\02-color 		119, 178, 207
+challenges\programming-languages\01-fortran					formula translation
+challenges\programming-languages\02-lisp					2, 3, 5, 7, 11, 13, 17, 19, 23, 29
