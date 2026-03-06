@@ -3,6 +3,7 @@
 import copy
 import random
 import pygame
+import os               #voor de card-images
 
 pygame.init()                           #nodig voor font
 
@@ -11,6 +12,7 @@ pygame.init()                           #nodig voor font
     Afbeeldingenn van OpenClipart-Vectors via Pixabay
     Font met symbool kaart: © Hoyle 2004. All Rights Reserved // Created by Conexion // http://conexion.deviantart.com/ 
         e = diamond, q = spade, r = heart, w = club
+    kaartontwerp by Victor MEUNIER. 
 '''
 
 
@@ -23,6 +25,10 @@ one_deck = [
     ['2','w'], ['3','w'], ['4','w'], ['5','w'], ['6','w'], ['7','w'], ['8','w'], ['9','w'], ['10','w'], ['J','w'], ['Q','w'], ['K','w'], ['A','w'],
     ['2','e'], ['3','e'], ['4','e'], ['5','e'], ['6','e'], ['7','e'], ['8','e'], ['9','e'], ['10','e'], ['J','e'], ['Q','e'], ['K','e'], ['A','e']
 ]
+
+
+
+
 
 
 decks = 4
@@ -118,7 +124,7 @@ class Card:
     
     def draw_card(self):
         pygame.draw.rect(screen,color_white, [self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number), self.width, self.height], 0, self.card_radius )
-        if self.card_value in ['e','r']:
+        if self.symbol in ['e','r']:
             screen.blit(font.render(self.card_value, True, color_red), (self.x_pos + 10 + 70* self.card_number, self.y_pos + 5 + 5*self.card_number))
             screen.blit(font_symbol.render(self.symbol, True, color_red), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 145 + 5*self.card_number))
         else:
@@ -129,11 +135,20 @@ class Card:
         
     
 # FUNCTIONS
+def deck_loader():
+    path = 'Project/Media/cards/'
+    for filename in os.listdir(path):                                   # zoek in juiste map
+        full_path = os.path.join(path, filename)                        # maak een path, inclusief .png-bestand        
+        key, _ = os.path.splitext(filename)                             # de key van mijn dict is de naam van de file.
+        image_surface = pygame.image.load(full_path).convert_alpha()    # laad de afbeelding en zet om in alpha om sneller te renderen
+        yield key, image_surface                                        # zoals return, maar met herhaling.
+
 def reset_game():
     global game_deck, initial_deal, my_hand, dealer_hand, active, reveal_dealer, hand_active, outcome, add_score, results, dealer_score, player_score, card_player_y, card_dealer_y
     # set variables
     active = True
     initial_deal = True                     # two cards
+    deck = dict(deck_loader())                                    #deck[Clovers_2] zou nu moeten werken.
     game_deck = copy.deepcopy(decks*one_deck)       # making an original deck. 
     my_hand = []
     dealer_hand = []
@@ -180,6 +195,7 @@ def draw_cards(player, dealer, reveal):
     for i in range(len(player)):
         card = Card(player[i][0], player[i][1], i, card_player_y)
         Card.draw_card(card)
+        screen.blit(deck["Clovers_2"], (10, 10))
     
     # if player hasn't finished turn, dealer will hide one card.
     for i in range(len(dealer)):
@@ -297,6 +313,33 @@ def check_endgame(hand_act, deal_score, play_score, result, totals, add):
 
     return result, totals, add
 
+def ask_reset(records):
+    while True:
+        
+        pygame.draw.rect(screen, color_white, [150,150,400,85], 0, 5)
+        pygame.draw.rect(screen, color_red, [150,150,400,85], 8, 5)
+        screen.blit(font.render("Reset score?", True, color_black), (175,150))
+
+        reset_button = Button.draw_button(Button("RESET", True, 50,250))
+        cancel_button = Button.draw_button(Button("CANCEL", True, 350,250))
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT: 
+                pygame.quit()
+                raise SystemExit
+        
+            if event.type == pygame.MOUSEBUTTONUP:               
+                if reset_button.collidepoint(event.pos):
+                    with open("Project/scores.txt", "w") as f:
+                        for i in range(3):
+                            f.write("0\n")
+                    with open("Project/scores.txt", "r") as f:
+                        records = f.read().splitlines()
+                        records = [int(i) for i in records]
+                    return records
+                elif cancel_button.collidepoint(event.pos):
+                    return records
 
 # MAIN GAME LOOP 
 
@@ -310,10 +353,10 @@ while run:
     # run the game at fps & fill screen with bg-color
     timer.tick(fps)
     screen.fill(color_grey)
+    deck = dict(deck_loader()) 
 
     #initial deal
     if initial_deal:
-        
         for i in range(2):
             my_hand, game_deck = deal_cards(my_hand, game_deck)
             dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
@@ -353,12 +396,7 @@ while run:
                     hand_active = False
                 #you can reset
                 elif buttons[2].collidepoint(event.pos):
-                    with open("Project/scores.txt", "w") as f:
-                        for i in range(3):
-                            f.write("0\n")
-                    with open("Project/scores.txt", "r") as f:
-                        records = f.read().splitlines()
-                        records = [int(i) for i in records]
+                    records = ask_reset(records)
 
                 elif len(buttons) == 4:
                     if buttons[3].collidepoint(event.pos):

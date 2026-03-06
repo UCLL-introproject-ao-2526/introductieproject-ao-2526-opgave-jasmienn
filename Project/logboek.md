@@ -1,6 +1,6 @@
 Totaal: 
 Tutorial: 2u
-Updating: 8u
+Updating: 8u30
 
 # 22/02
 
@@ -82,3 +82,13 @@ Dus het mag enkel opslaan als het spel gedaan is en de score verandert.
 ## 21.15
 De scores worden extern opgeslagen en opgehaald. Als je op reset klikt, komen deze weer op 0 te staan. 
 Hier moet evt. nog een waarschuwing bij.
+
+# 05/03 (0u30)
+## 22.45
+Net een halfuurtje gezorgd dat er een waarschuwing komt als je reset. Maar lelijklelijklelijk. 
+Er moet echt nog iets aan de schoonheid van de app gebeuren. 
+
+# 06/03 ()
+## 8.30
+Ik zou alle kaarten kunnen vervangen door png's. De vraag is of dit mijn spel niet enorm traag zal maken.
+Let's try anyway. 
