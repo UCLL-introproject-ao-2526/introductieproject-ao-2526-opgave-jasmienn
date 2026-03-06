@@ -20,10 +20,10 @@ pygame.init()                           #nodig voor font
 
 # e = diamond, q = spade, r = heart, w = club (dit komt door het lettertype)
 one_deck = [
-    ['2','r'], ['3','r'], ['4','r'], ['5','r'], ['6','r'], ['7','r'], ['8','r'], ['9','r'], ['10','r'], ['J','r'], ['Q','r'], ['K','r'], ['A','r'],
-    ['2','q'], ['3','q'], ['4','q'], ['5','q'], ['6','q'], ['7','q'], ['8','q'], ['9','q'], ['10','q'], ['J','q'], ['Q','q'], ['K','q'], ['A','q'],
-    ['2','w'], ['3','w'], ['4','w'], ['5','w'], ['6','w'], ['7','w'], ['8','w'], ['9','w'], ['10','w'], ['J','w'], ['Q','w'], ['K','w'], ['A','w'],
-    ['2','e'], ['3','e'], ['4','e'], ['5','e'], ['6','e'], ['7','e'], ['8','e'], ['9','e'], ['10','e'], ['J','e'], ['Q','e'], ['K','e'], ['A','e']
+    ['2','Hearts'], ['3','Hearts'], ['4','Hearts'], ['5','Hearts'], ['6','Hearts'], ['7','Hearts'], ['8','Hearts'], ['9','Hearts'], ['10','Hearts'], ['Jack','Hearts'], ['Queen','Hearts'], ['King','Hearts'], ['A','Hearts'],
+    ['2','Pikes'], ['3','Pikes'], ['4','Pikes'], ['5','Pikes'], ['6','Pikes'], ['7','Pikes'], ['8','Pikes'], ['9','Pikes'], ['10','Pikes'], ['Jack','Pikes'], ['Queen','Pikes'], ['King','Pikes'], ['A','Pikes'],
+    ['2','Clovers'], ['3','Clovers'], ['4','Clovers'], ['5','Clovers'], ['6','Clovers'], ['7','Clovers'], ['8','Clovers'], ['9','Clovers'], ['10','Clovers'], ['Jack','Clovers'], ['Queen','Clovers'], ['King','Clovers'], ['A','Clovers'],
+    ['2','Tiles'], ['3','Tiles'], ['4','Tiles'], ['5','Tiles'], ['6','Tiles'], ['7','Tiles'], ['8','Tiles'], ['9','Tiles'], ['10','Tiles'], ['Jack','Tiles'], ['Queen','Tiles'], ['King','Tiles'], ['A','Tiles']
 ]
 
 
@@ -105,33 +105,46 @@ class Card:
     height = 220
     card_radius = 15
     x_pos = 70
-    jack_img = pygame.image.load("Project/Media/Jack.png")
-    queen_img = pygame.image.load("Project/Media/Queen.png")
-    king_img = pygame.image.load("Project/Media/King.png")
+    # jack_img = pygame.image.load("Project/Media/Jack.png")
+    # queen_img = pygame.image.load("Project/Media/Queen.png")
+    # king_img = pygame.image.load("Project/Media/King.png")
     def __init__(self, card_value, symbol, card_number,y_pos):
+        #symbols = Tiles, Cloves, Pikes, Hearts
         self.symbol = symbol
         self.card_value = card_value
         self.card_number = card_number
         self.y_pos = y_pos
 
-    def draw_figure_card(self):
-        if self.symbol == 'J':
-            screen.blit(self.jack_img, ((self.x_pos + 5 +70*self.card_number, self.y_pos + 10 + 5*self.card_number)))
-        elif self.symbol == 'Q':
-            screen.blit(self.queen_img, ((self.x_pos + 5 + 70*self.card_number, self.y_pos + 10 + 5*self.card_number)))
-        elif self.symbol == 'K':
-            screen.blit(self.king_img, ((self.x_pos + 5 + 70*self.card_number, self.y_pos + 10 + 5*self.card_number)))
-    
+    def make_filename(self):
+        name_file = self.symbol + '_' + self.card_value
+        print(name_file)
+        return name_file
+
     def draw_card(self):
-        pygame.draw.rect(screen,color_white, [self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number), self.width, self.height], 0, self.card_radius )
-        if self.symbol in ['e','r']:
+        name = self.make_filename()
+        if name in deck:
+            screen.blit(deck[name], (self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number)))
+        else: 
             screen.blit(font.render(self.card_value, True, color_red), (self.x_pos + 10 + 70* self.card_number, self.y_pos + 5 + 5*self.card_number))
-            screen.blit(font_symbol.render(self.symbol, True, color_red), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 145 + 5*self.card_number))
-        else:
-            screen.blit(font.render(self.card_value, True, color_black), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 5 + 5*self.card_number))
-            screen.blit(font_symbol.render(self.symbol, True, color_black), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 145 + 5*self.card_number))
-        pygame.draw.rect(screen, color_black, [self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number), self.width, self.height], 5, self.card_radius )
-        self.draw_figure_card()
+
+    # def draw_figure_card(self):
+    #     if self.symbol == 'J':
+    #         screen.blit(self.jack_img, ((self.x_pos + 5 +70*self.card_number, self.y_pos + 10 + 5*self.card_number)))
+    #     elif self.symbol == 'Q':
+    #         screen.blit(self.queen_img, ((self.x_pos + 5 + 70*self.card_number, self.y_pos + 10 + 5*self.card_number)))
+    #     elif self.symbol == 'K':
+    #         screen.blit(self.king_img, ((self.x_pos + 5 + 70*self.card_number, self.y_pos + 10 + 5*self.card_number)))
+    
+    # def draw_card(self):
+    #     pygame.draw.rect(screen,color_white, [self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number), self.width, self.height], 0, self.card_radius )
+    #     if self.symbol in ['e','r']:
+    #         screen.blit(font.render(self.card_value, True, color_red), (self.x_pos + 10 + 70* self.card_number, self.y_pos + 5 + 5*self.card_number))
+    #         screen.blit(font_symbol.render(self.symbol, True, color_red), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 145 + 5*self.card_number))
+    #     else:
+    #         screen.blit(font.render(self.card_value, True, color_black), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 5 + 5*self.card_number))
+    #         screen.blit(font_symbol.render(self.symbol, True, color_black), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 145 + 5*self.card_number))
+    #     pygame.draw.rect(screen, color_black, [self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number), self.width, self.height], 5, self.card_radius )
+    #     self.draw_figure_card()
         
     
 # FUNCTIONS
@@ -195,14 +208,13 @@ def draw_cards(player, dealer, reveal):
     for i in range(len(player)):
         card = Card(player[i][0], player[i][1], i, card_player_y)
         Card.draw_card(card)
-        screen.blit(deck["Clovers_2"], (10, 10))
     
     # if player hasn't finished turn, dealer will hide one card.
     for i in range(len(dealer)):
-        if i != 0 or reveal:
-            card = Card(dealer[i][0], dealer[i][1], i, card_dealer_y)
-        else:
-            card = Card("??", None, i, card_dealer_y)
+        #if i != 0 or reveal:
+        card = Card(dealer[i][0], dealer[i][1], i, card_dealer_y)
+        # else:
+        #     card = Card("??", None, i, card_dealer_y)
         Card.draw_card(card)
         
 #get best score possible
@@ -214,7 +226,7 @@ def calculate_score(hand):
         for j in range(8):
             if hand[i][0] == one_deck[j][0]:        # zoek enkel in de waardes.
                 hand_score += int(hand[i][0])
-        if hand[i][0] in ['10','J', 'Q', 'K']:
+        if hand[i][0] in ['10','Jack', 'Queen', 'King']:
             hand_score += 10
         elif hand[i][0] == 'A':
             hand_score += 11

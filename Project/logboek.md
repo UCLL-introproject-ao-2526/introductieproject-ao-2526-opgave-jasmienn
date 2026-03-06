@@ -1,6 +1,6 @@
 Totaal: 
 Tutorial: 2u
-Updating: 8u30
+Updating: 10u
 
 # 22/02
 
@@ -88,7 +88,11 @@ Hier moet evt. nog een waarschuwing bij.
 Net een halfuurtje gezorgd dat er een waarschuwing komt als je reset. Maar lelijklelijklelijk. 
 Er moet echt nog iets aan de schoonheid van de app gebeuren. 
 
-# 06/03 ()
+# 06/03 (1u30)
 ## 8.30
 Ik zou alle kaarten kunnen vervangen door png's. De vraag is of dit mijn spel niet enorm traag zal maken.
 Let's try anyway. 
+
+## 10.00
+Mijn kaarten verschijnen, maar veel te groot en niet smooth. 
+In de Challenges stond iets van ImageMagick, mss toch eens installeren. 
