@@ -1,6 +1,6 @@
 Totaal: 
 Tutorial: 2u
-Updating: 10u
+Updating: 14u
 
 # 22/02
 
@@ -105,7 +105,7 @@ Nu past de rest er niet meer bij, dus dat gaan we ook oplossen.
 De ???-kaart is voorzien, maar niet echt foolproof of proper opgelost.
 Ik moet zeker nog mijn spel voorzien voor fouten.
 
-# 07/03 
+# 07/03 (4u)
 ## 12.00
 Kleuren kiezen doe ik zelf het liefst met Coolor.(Tip voor een Challenge?) 
 Ik heb ook feedback gevraagd:
@@ -122,3 +122,14 @@ Nieuwe achtergrond, nieuwe problemen
 Alles ziet er al een stuk beter uit.
 Mijn infobuttons zijn hetzelfde als mijn drukbuttons. Dat is nog een probleem. 
 
+## 17.15
+Ik heb mijn hoover aangepast, maar visueel wil ik ook iets veranderen. 
+
+Oei, A + A + K = 22, maar dit zou 12 moeten zijn.
+![problem](image.png)
+
+Player wins komt al voor kaarten gedeeld zijn, dat is vervelend. 
+
+## 17.45
+Het spel werkt, het spel ziet er goed uit. 
+Tijd om ook de code op te ruimen en van comments te voorzien.

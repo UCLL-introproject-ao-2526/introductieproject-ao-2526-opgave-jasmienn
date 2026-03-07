@@ -26,11 +26,6 @@ one_deck = [
     ['2','Tiles'], ['3','Tiles'], ['4','Tiles'], ['5','Tiles'], ['6','Tiles'], ['7','Tiles'], ['8','Tiles'], ['9','Tiles'], ['10','Tiles'], ['Jack','Tiles'], ['Queen','Tiles'], ['King','Tiles'], ['A','Tiles']
 ]
 
-
-
-
-
-
 decks = 4
 
 # screen
@@ -49,7 +44,6 @@ font_symbol = pygame.font.Font("Project/HoylePlayingCards.ttf",70)
 color_black = "#2F2D2D"
 color_red = '#FF5555'
 color_white ="#FFFFFF"
-color_grey = "#F2E9E4"
 color_green = "#27613e" 
 
 success_sound = 'Project/Media/success.mp3'
@@ -65,7 +59,7 @@ reveal_dealer = False
 hand_active = False
 outcome = 0 
 add_score = False
-results = ['','You are busted','You win', 'Dealer wins', 'Draw']
+results = ['','Player\'s busted','Player wins', 'Dealer wins', 'Draw']
 
 # win loss push(draw)
 records = [0,0,0]
@@ -83,20 +77,26 @@ deal = True
 
 class Rectangle:
     
-    def __init__(self, name, color, x, y, w):
+    def __init__(self, name, color:str, x:int, y:int, w:int, button:bool):
         self.name = name
         self.color=color
         self.x = x
         self.y = y
         self.w = w
         self.h = 85
+        self.button = button
 
     def draw_rect(self):
-
+        if self.button:
+            border = 5
+            radius = 15
+        else: 
+            border = 3
+            radius = 0
         rect = pygame.Rect(0, 0, self.w, self.h)
         rect.center=(self.x, self.y)
-        rechthoek = pygame.draw.rect(screen, color_white, rect)
-        pygame.draw.rect(screen, self.color, rect, 5, 0)
+        rechthoek = pygame.draw.rect(screen, color_white, rect, 0, radius)
+        pygame.draw.rect(screen, self.color, rect, border, radius)
         text = font.render(self.name, True, self.color)
         text_rect = text.get_rect(center=(self.x, self.y))
         screen.blit(text, text_rect)
@@ -161,11 +161,10 @@ def deal_cards(current_hand, current_deck):
     card = random.randint(0,len(current_deck))
     current_hand.append(current_deck[card-1])
     current_deck.pop(card-1)
-    # print(current_hand,current_deck)
     return current_hand, current_deck
 
 def draw_scores(player,dealer):
-    screen.blit(font.render(f'You have {player}', True, color_white), (310, 430))
+    screen.blit(font.render(f'Player has {player}', True, color_white), (310, 430))
     if reveal_dealer:
         screen.blit(font.render(f'Dealer has {dealer}', True, color_white),(310, 130)) 
 
@@ -201,7 +200,7 @@ def draw_cards(player, dealer, reveal):
 def calculate_score(hand):
     #calculate hand score fresh every time. check Aces
     hand_score = 0
-    aces_count = hand[0].count('A')
+    aces_count = 0
     for i in range(len(hand)):
         for j in range(8):
             if hand[i][0] == one_deck[j][0]:        # zoek enkel in de waardes.
@@ -210,11 +209,12 @@ def calculate_score(hand):
             hand_score += 10
         elif hand[i][0] == 'A':
             hand_score += 11
+            aces_count += 1
     
-    if hand_score > 21 and aces_count > 0:
-        for i in range(aces_count):
-            if hand_score > 21:
-                hand_score-=10
+    while hand_score > 21 and aces_count > 0:
+        if hand_score > 21:
+            hand_score-=10
+        aces_count -= 1
     return hand_score
 
 # conditions en buttons voor draw game
@@ -222,19 +222,16 @@ def draw_game(act, records, result, hand_act):
     button_list = []
     # initially on startup (not act). You can only deal
     if not act:
-        deal = Rectangle.draw_rect(Rectangle("START", color_black, 300, 80, 180))
+        deal = Rectangle.draw_rect(Rectangle("START", color_black, 300, 80, 180, True))
         button_list.append(deal)
 
     # Game started = hit & stand tonen + win/loss-record
     else:
         if hand_act:
-            hit = Rectangle.draw_rect(Rectangle("HIT ME", color_black, 150, 780, 200))
-            stand = Rectangle.draw_rect(Rectangle("STAND", color_black, 450, 780, 200))
-        else:
-            hit = Rectangle.draw_rect(Rectangle("HIT ME", color_grey, 150, 780, 200))
-            stand = Rectangle.draw_rect(Rectangle("STAND", color_grey, 450, 780, 200))
-        button_list.append(hit)
-        button_list.append(stand)
+            hit = Rectangle.draw_rect(Rectangle("HIT ME", color_black, 150, 780, 200, True))
+            stand = Rectangle.draw_rect(Rectangle("STAND", color_black, 450, 780, 200, True))
+            button_list.append(hit)
+            button_list.append(stand)
         
         score_text = font_small.render(f'Wins: {records[0]}   Losses: {records[1]}    Draws: {records[2]}', True, color_white)
         screen.blit(score_text,(15,840))
@@ -254,7 +251,7 @@ def draw_game(act, records, result, hand_act):
             length = 340
         elif result == 2:
             text_color = color_green
-            length = 190
+            length = 270
         elif result == 3:
             text_color = color_red
             length = 270
@@ -262,10 +259,10 @@ def draw_game(act, records, result, hand_act):
             text_color = color_black
             length = 140
 
-        Rectangle.draw_rect(Rectangle(results[result], text_color, 300, 260, length))
+        Rectangle.draw_rect(Rectangle(results[result], text_color, 300, 260, length, False))
 
         #opnieuw spelen?
-        deal = Rectangle.draw_rect(Rectangle(" DEAL", color_black, 300, 80, 180))
+        deal = Rectangle.draw_rect(Rectangle(" DEAL", color_black, 300, 80, 180, True))
         button_list.append(deal)
 
     return button_list
@@ -307,15 +304,23 @@ def check_endgame(hand_act, deal_score, play_score, result, totals, add):
 def ask_reset(records):
     while True:
         pygame.draw.rect(screen, color_green, (0, 0, WIDTH, HEIGHT- 60))
-        Rectangle.draw_rect(Rectangle("Reset scores?", color_black, 300, 300, 400))
-        reset_button = Rectangle.draw_rect(Rectangle("RESET", color_red, 125, 400,200))
-        cancel_button = Rectangle.draw_rect(Rectangle("CANCEL", color_grey, 450, 400, 200))
+        Rectangle.draw_rect(Rectangle("Reset scores?", color_black, 300, 300, 400, False))
+        reset_button = Rectangle.draw_rect(Rectangle("RESET", color_red, 125, 400, 200, True))
+        cancel_button = Rectangle.draw_rect(Rectangle("CANCEL", color_white, 450, 400, 200, True))
         pygame.display.update()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT: 
                 pygame.quit()
                 raise SystemExit
+            
+            if event.type == pygame.MOUSEMOTION:
+                hover = False
+                pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+                if reset_button.collidepoint(event.pos) or cancel_button.collidepoint(event.pos):
+                        hover = True
+                if hover == True:
+                    pygame.mouse.set_cursor(*pygame.cursors.diamond)
         
             if event.type == pygame.MOUSEBUTTONUP:               
                 if reset_button.collidepoint(event.pos):
@@ -366,16 +371,23 @@ while run:
         if event.type == pygame.QUIT:               #quit = stop programm
             run = False
 
-        if event_type == pygame.MOUSEMOTION:
-            
+        if event.type == pygame.MOUSEMOTION:
+            hover = False
+            pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+            for button in buttons:
+                if button.collidepoint(event.pos):
+                    hover = True
+            if hover == True:
+                pygame.mouse.set_cursor(*pygame.cursors.diamond)
 
         if event.type == pygame.MOUSEBUTTONUP:               #start game bij klik op Deal
+            pygame.mouse.set_cursor(*pygame.cursors.tri_left)
             if not active:                                   # er is maar 1 rectangle
                 if buttons[0].collidepoint(event.pos):
                     reset_game()
                     pygame.mixer.music.load(hitme_sound)
                     pygame.mixer.music.play()
-            else:
+            elif len(buttons)==3:
                 #you can hit
                 if buttons[0].collidepoint(event.pos) and player_score < 21 and hand_active:
                     pygame.mixer.music.load(hitme_sound)
@@ -389,14 +401,14 @@ while run:
                 elif buttons[2].collidepoint(event.pos):
                     records = ask_reset(records)
 
-                elif len(buttons) == 4:
-                    if buttons[3].collidepoint(event.pos):
-                        pygame.mixer.music.load(hitme_sound)
-                        pygame.mixer.music.play()
-                        reset_game()
+            elif len(buttons) == 2:
+                if buttons[1].collidepoint(event.pos):
+                    pygame.mixer.music.load(hitme_sound)
+                    pygame.mixer.music.play()
+                    reset_game()
 
         if event.type == pygame.KEYDOWN:               #start game bij enter
-            if not active or len(buttons) == 4:
+            if not active or len(buttons) == 2:
                 if event.key == pygame.K_RETURN:
                         pygame.mixer.music.load(hitme_sound)
                         pygame.mixer.music.play()
