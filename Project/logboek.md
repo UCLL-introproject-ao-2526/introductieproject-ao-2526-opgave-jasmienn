@@ -94,5 +94,31 @@ Ik zou alle kaarten kunnen vervangen door png's. De vraag is of dit mijn spel ni
 Let's try anyway. 
 
 ## 10.00
-Mijn kaarten verschijnen, maar veel te groot en niet smooth. 
+Mijn kaarten verschijnen, maar veel te groot en niet smooth. Bedankt aan StackOverflow en lumo, want dit was niet gemakkelijk. Ik begrijp wel de code, en kan ze gebruiken.
 In de Challenges stond iets van ImageMagick, mss toch eens installeren. 
+
+Hoe gemakkelijk was dit!? Heerlijk. 
+Ik moet nog een kaart voorzien voor de ??? want die heb ik even uitgezet
+Nu past de rest er niet meer bij, dus dat gaan we ook oplossen. 
+
+## 14.00
+De ???-kaart is voorzien, maar niet echt foolproof of proper opgelost.
+Ik moet zeker nog mijn spel voorzien voor fouten.
+
+# 07/03 
+## 12.00
+Kleuren kiezen doe ik zelf het liefst met Coolor.(Tip voor een Challenge?) 
+Ik heb ook feedback gevraagd:
+    Ben jij onder of boven? 
+    Het is niet duidelijk wanneer je wint. 
+
+## 12.30
+Nieuwe achtergrond, nieuwe problemen
+    reset = pygame.draw.rect(screen, "color_grey", [540,840,30,30], 0, 0)
+    reset_img = pygame.image.load("Project/Media/reset.png")
+    screen.blit(reset_img, (540, 840))
+
+## 14.15
+Alles ziet er al een stuk beter uit.
+Mijn infobuttons zijn hetzelfde als mijn drukbuttons. Dat is nog een probleem. 
+

@@ -9,7 +9,7 @@ pygame.init()                           #nodig voor font
 
 '''credits
     Sound Effects by freesound_community from Pixabay
-    Afbeeldingenn van OpenClipart-Vectors via Pixabay
+    Patroon background: https://prettywebz.com 
     Font met symbool kaart: © Hoyle 2004. All Rights Reserved // Created by Conexion // http://conexion.deviantart.com/ 
         e = diamond, q = spade, r = heart, w = club
     kaartontwerp by Victor MEUNIER. 
@@ -46,11 +46,11 @@ font = pygame.font.Font("Project/FreeSansBold.ttf",44)
 font_small = pygame.font.Font("Project/FreeSansBold.ttf",32)
 font_symbol = pygame.font.Font("Project/HoylePlayingCards.ttf",70)
 
-color_black = "#1E1A1A"
-color_red = '#702D2D'
-color_white ="#C1AFAF"
-color_grey = "#726F6F"
-color_green = "#2B5B26"
+color_black = "#2F2D2D"
+color_red = '#FF5555'
+color_white ="#FFFFFF"
+color_grey = "#F2E9E4"
+color_green = "#27613e" 
 
 success_sound = 'Project/Media/success.mp3'
 hitme_sound = 'Project/Media/hitme.mp3'
@@ -65,7 +65,7 @@ reveal_dealer = False
 hand_active = False
 outcome = 0 
 add_score = False
-results = ['','You are busted','You win', 'You lose', 'Draw']
+results = ['','You are busted','You win', 'Dealer wins', 'Draw']
 
 # win loss push(draw)
 records = [0,0,0]
@@ -73,6 +73,7 @@ player_score = 0
 dealer_score = 0 
 
 # Media
+background = pygame.image.load("Project/Media/Green.png")
 card_player_y = 1000
 card_dealer_y = 1000
 card_speed = 0.3
@@ -80,34 +81,33 @@ deal = True
 
 
 
-class Button:
-    width = 230
-    height = 100
-    def __init__(self, name, act, x, y):
+class Rectangle:
+    
+    def __init__(self, name, color, x, y, w):
         self.name = name
-        self.act = act
+        self.color=color
         self.x = x
         self.y = y
-    
-    def draw_button(self):
-        if self.act:
-            color = color_black
-        else:
-            color = color_grey
-        button_name = pygame.draw.rect(screen, color_white, [self.x, self.y, self.width, self.height], 0, 25)      # teken rechthoek op positie x,y en grootte W,H, no border, 5 border-radius
-        pygame.draw.rect(screen, color_black, [self.x, self.y, self.width, self.height], 8, 25)             # grotere rechthoek > border in groen 
-        text = font.render(self.name, True, color)
-        screen.blit(text, (self.x + 35, self.y + 25))
-        return button_name
+        self.w = w
+        self.h = 85
+
+    def draw_rect(self):
+
+        rect = pygame.Rect(0, 0, self.w, self.h)
+        rect.center=(self.x, self.y)
+        rechthoek = pygame.draw.rect(screen, color_white, rect)
+        pygame.draw.rect(screen, self.color, rect, 5, 0)
+        text = font.render(self.name, True, self.color)
+        text_rect = text.get_rect(center=(self.x, self.y))
+        screen.blit(text, text_rect)
+
+        return rechthoek
 
 class Card:
     width = 120
     height = 220
     card_radius = 15
     x_pos = 70
-    # jack_img = pygame.image.load("Project/Media/Jack.png")
-    # queen_img = pygame.image.load("Project/Media/Queen.png")
-    # king_img = pygame.image.load("Project/Media/King.png")
     def __init__(self, card_value, symbol, card_number,y_pos):
         #symbols = Tiles, Cloves, Pikes, Hearts
         self.symbol = symbol
@@ -117,7 +117,6 @@ class Card:
 
     def make_filename(self):
         name_file = self.symbol + '_' + self.card_value
-        print(name_file)
         return name_file
 
     def draw_card(self):
@@ -126,25 +125,6 @@ class Card:
             screen.blit(deck[name], (self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number)))
         else: 
             screen.blit(font.render(self.card_value, True, color_red), (self.x_pos + 10 + 70* self.card_number, self.y_pos + 5 + 5*self.card_number))
-
-    # def draw_figure_card(self):
-    #     if self.symbol == 'J':
-    #         screen.blit(self.jack_img, ((self.x_pos + 5 +70*self.card_number, self.y_pos + 10 + 5*self.card_number)))
-    #     elif self.symbol == 'Q':
-    #         screen.blit(self.queen_img, ((self.x_pos + 5 + 70*self.card_number, self.y_pos + 10 + 5*self.card_number)))
-    #     elif self.symbol == 'K':
-    #         screen.blit(self.king_img, ((self.x_pos + 5 + 70*self.card_number, self.y_pos + 10 + 5*self.card_number)))
-    
-    # def draw_card(self):
-    #     pygame.draw.rect(screen,color_white, [self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number), self.width, self.height], 0, self.card_radius )
-    #     if self.symbol in ['e','r']:
-    #         screen.blit(font.render(self.card_value, True, color_red), (self.x_pos + 10 + 70* self.card_number, self.y_pos + 5 + 5*self.card_number))
-    #         screen.blit(font_symbol.render(self.symbol, True, color_red), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 145 + 5*self.card_number))
-    #     else:
-    #         screen.blit(font.render(self.card_value, True, color_black), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 5 + 5*self.card_number))
-    #         screen.blit(font_symbol.render(self.symbol, True, color_black), (self.x_pos + 10 + 70*self.card_number, self.y_pos + 145 + 5*self.card_number))
-    #     pygame.draw.rect(screen, color_black, [self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number), self.width, self.height], 5, self.card_radius )
-    #     self.draw_figure_card()
         
     
 # FUNCTIONS
@@ -185,14 +165,14 @@ def deal_cards(current_hand, current_deck):
     return current_hand, current_deck
 
 def draw_scores(player,dealer):
-    screen.blit(font.render(f'Score[{player}]', True, color_white), (350,400))
+    screen.blit(font.render(f'You have {player}', True, color_white), (310, 430))
     if reveal_dealer:
-        screen.blit(font.render(f'Score[{dealer}]', True, color_white),(350,100)) 
+        screen.blit(font.render(f'Dealer has {dealer}', True, color_white),(310, 130)) 
 
 def move_cards():
     global card_player_y, card_dealer_y
-    target_player_y = 460
-    target_dealer_y = 160
+    target_player_y = 510
+    target_dealer_y = 210
     
     if card_player_y > target_player_y:
        card_player_y += card_speed * -54
@@ -211,10 +191,10 @@ def draw_cards(player, dealer, reveal):
     
     # if player hasn't finished turn, dealer will hide one card.
     for i in range(len(dealer)):
-        #if i != 0 or reveal:
-        card = Card(dealer[i][0], dealer[i][1], i, card_dealer_y)
-        # else:
-        #     card = Card("??", None, i, card_dealer_y)
+        if i != 0 or reveal:
+            card = Card(dealer[i][0], dealer[i][1], i, card_dealer_y)
+        else:
+         card = Card("back", "card", i, card_dealer_y)
         Card.draw_card(card)
         
 #get best score possible
@@ -242,17 +222,17 @@ def draw_game(act, records, result, hand_act):
     button_list = []
     # initially on startup (not act). You can only deal
     if not act:
-        deal = Button.draw_button(Button("START", True, 150, 20))
+        deal = Rectangle.draw_rect(Rectangle("START", color_black, 300, 80, 180))
         button_list.append(deal)
 
     # Game started = hit & stand tonen + win/loss-record
     else:
         if hand_act:
-            hit = Button.draw_button(Button("HIT ME", True, 25, 700))
-            stand = Button.draw_button(Button("STAND", True, 325, 700))
+            hit = Rectangle.draw_rect(Rectangle("HIT ME", color_black, 150, 780, 200))
+            stand = Rectangle.draw_rect(Rectangle("STAND", color_black, 450, 780, 200))
         else:
-            hit = Button.draw_button(Button("HIT ME", False, 25, 700))
-            stand = Button.draw_button(Button("STAND", False, 325, 700))
+            hit = Rectangle.draw_rect(Rectangle("HIT ME", color_grey, 150, 780, 200))
+            stand = Rectangle.draw_rect(Rectangle("STAND", color_grey, 450, 780, 200))
         button_list.append(hit)
         button_list.append(stand)
         
@@ -260,33 +240,32 @@ def draw_game(act, records, result, hand_act):
         screen.blit(score_text,(15,840))
 
         # reset score
-        reset = pygame.draw.rect(screen, color_grey, [540,840,30,30], 0, 0)
         reset_img = pygame.image.load("Project/Media/reset.png")
-        screen.blit(reset_img, (540, 840))
+        reset = reset_img.get_rect(center=(550,860))
+        screen.blit(reset_img, reset)
         button_list.append(reset)
 
     # restart when done playing
     if result != 0:
-        #tekst als je wint
-        if result== 1:
-            pygame.draw.rect(screen, color_white, [5,15,350,85], 0, 5)
-            pygame.draw.rect(screen, color_red, [5,15,350,85], 8, 5)
-            screen.blit(font.render(results[result], True, color_red), (20,25))
+        #tekst als spel klaar
+        
+        if result == 1:
+            text_color = color_red
+            length = 340
         elif result == 2:
-            pygame.draw.rect(screen, color_white, [5,15,200,85], 0, 5)
-            pygame.draw.rect(screen, color_green, [5,15,200,85], 8, 5)
-            screen.blit(font.render(results[result], True, color_green), (20,25))
+            text_color = color_green
+            length = 190
         elif result == 3:
-            pygame.draw.rect(screen, color_white, [5,15,230,85], 0, 5)
-            pygame.draw.rect(screen, color_red, [5,15,230,85], 8, 5)
-            screen.blit(font.render(results[result], True, color_red), (20,25))
+            text_color = color_red
+            length = 270
         elif result == 4:
-            pygame.draw.rect(screen, color_white, [5,15,150,85], 0, 5)
-            pygame.draw.rect(screen, color_black, [5,15,150,85], 8, 5)
-            screen.blit(font.render(results[result], True, color_black), (20,25))
+            text_color = color_black
+            length = 140
+
+        Rectangle.draw_rect(Rectangle(results[result], text_color, 300, 260, length))
 
         #opnieuw spelen?
-        deal = Button.draw_button(Button(" DEAL", True, 150, 220))
+        deal = Rectangle.draw_rect(Rectangle(" DEAL", color_black, 300, 80, 180))
         button_list.append(deal)
 
     return button_list
@@ -327,13 +306,10 @@ def check_endgame(hand_act, deal_score, play_score, result, totals, add):
 
 def ask_reset(records):
     while True:
-        
-        pygame.draw.rect(screen, color_white, [150,150,400,85], 0, 5)
-        pygame.draw.rect(screen, color_red, [150,150,400,85], 8, 5)
-        screen.blit(font.render("Reset score?", True, color_black), (175,150))
-
-        reset_button = Button.draw_button(Button("RESET", True, 50,250))
-        cancel_button = Button.draw_button(Button("CANCEL", True, 350,250))
+        pygame.draw.rect(screen, color_green, (0, 0, WIDTH, HEIGHT- 60))
+        Rectangle.draw_rect(Rectangle("Reset scores?", color_black, 300, 300, 400))
+        reset_button = Rectangle.draw_rect(Rectangle("RESET", color_red, 125, 400,200))
+        cancel_button = Rectangle.draw_rect(Rectangle("CANCEL", color_grey, 450, 400, 200))
         pygame.display.update()
 
         for event in pygame.event.get():
@@ -364,9 +340,9 @@ with open("Project/scores.txt", "r") as f:
 while run:
     # run the game at fps & fill screen with bg-color
     timer.tick(fps)
-    screen.fill(color_grey)
+    screen.blit(background, (0, 0))
     deck = dict(deck_loader()) 
-
+    
     #initial deal
     if initial_deal:
         for i in range(2):
@@ -389,6 +365,9 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:               #quit = stop programm
             run = False
+
+        if event_type == pygame.MOUSEMOTION:
+            
 
         if event.type == pygame.MOUSEBUTTONUP:               #start game bij klik op Deal
             if not active:                                   # er is maar 1 rectangle
