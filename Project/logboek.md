@@ -1,6 +1,6 @@
 Totaal: 
 Tutorial: 2u
-Updating: 16.30
+Updating: 17u
 
 # 22/02
 
@@ -142,11 +142,15 @@ Het is zeer verwarrend met de knoppen, ik denk dat je beter met namen werkt
 Ik ben het spel aan het opschonen met extra functies. 
 Nu kloppen mijn buttons niet meer, maar dat is voor de volgende keer. 
 
-# 10/03 (1u30)
+# 10/03 (2u)
 ## 21.00
 Ik heb wat geprutst met het geluid en de komst van het kader dat zegt of je wint. Het kwam te snel vond ik.
 Nu is er echter een probleem als de speler meteen wint. Er is een probleem als de kaarten nog niet uitgemoved zijn.
 Ik heb het opgelost met nog een variabele. Dat vind ik nog niet zo proper. Ik zit vast met die reset_game(). 
 
-Ik denk dat ik dat moet oplossen met een klasse Game.
+## 22.00
+
+Ik heb nog geprobeerd om een klasse Game of Score te maken, maar dat lukt me momenteel niet. Ik zie niet goed in wat bij de __init__ moet.
+Ik denk al die variabelen van reset, want dat zijn de kenmerken van de game. Als deze veranderen, verandert er iets in de game.
+Ik waag in mijn overige 3u wellicht nog een nieuwe poging, maar vanavond niet meer.
 

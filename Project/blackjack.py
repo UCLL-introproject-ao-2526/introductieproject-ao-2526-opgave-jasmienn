@@ -280,6 +280,8 @@ def show_result(result):
         Rectangle.draw_rect(Rectangle(results[result], text_color, 300, 260, length, False))
         play_sound(result)
 
+
+
 # Teken buttons & inforechthoeken
 def draw_game(act, records, result, hand_act):
     # buttons
