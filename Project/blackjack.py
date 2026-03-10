@@ -8,10 +8,10 @@ import os               #voor de card-images
 pygame.init()                           #nodig voor font
 
 '''credits
-    Sound Effects by freesound_community from Pixabay
+    Sound Effects (hit_me & success) by freesound_community from Pixabay
+    Sound Effect (you lose) by Tuomas_Data from Pixabay
     Patroon background: https://prettywebz.com 
-    Font met symbool kaart: © Hoyle 2004. All Rights Reserved // Created by Conexion // http://conexion.deviantart.com/ 
-        e = diamond, q = spade, r = heart, w = club
+    
     kaartontwerp by Victor MEUNIER. 
 '''
 
@@ -46,35 +46,39 @@ color_red = '#FF5555'
 color_white ="#FFFFFF"
 color_green = "#27613e" 
 
+# Media
+background = pygame.image.load("Project/Media/Green.png")
 success_sound = 'Project/Media/success.mp3'
 hitme_sound = 'Project/Media/hitme.mp3'
+lost_sound = 'Project/Media/lost.mp3'
 
-# setting deck & hands
+# deck & hands goedzetten
 game_deck = copy.deepcopy(decks*one_deck)
 initial_deal = True
 my_hand=[]
 dealer_hand=[]
 active = False
+deal = True
 reveal_dealer = False 
 hand_active = False
-outcome = 0 
 add_score = False
 results = ['','Player\'s busted','Player wins', 'Dealer wins', 'Draw']
+outcome = 0 
+sound = True
+on_place = False
 
-# win loss push(draw)
+# startpositie kaarten
+card_player_y = 1000
+card_dealer_y = -280
+card_speed = 0.3
+
+# win loss draw
 records = [0,0,0]
 player_score = 0
 dealer_score = 0 
 
-# Media
-background = pygame.image.load("Project/Media/Green.png")
-card_player_y = 1000
-card_dealer_y = 1000
-card_speed = 0.3
-deal = True
 
-
-
+# klasse voor buttons & info-rechthoeken
 class Rectangle:
     
     def __init__(self, name, color:str, x:int, y:int, w:int, button:bool):
@@ -103,6 +107,7 @@ class Rectangle:
 
         return rechthoek
 
+# speelkaart
 class Card:
     width = 120
     height = 220
@@ -124,24 +129,24 @@ class Card:
         if name in deck:
             screen.blit(deck[name], (self.x_pos +(70*self.card_number), self.y_pos + (5*self.card_number)))
         else: 
-            screen.blit(font.render(self.card_value, True, color_red), (self.x_pos + 10 + 70* self.card_number, self.y_pos + 5 + 5*self.card_number))
-        
+            Rectangle.draw_rect(Rectangle("Game's broken", color_black, 300, 300, 400, False))
     
 # FUNCTIONS
+
+## laad de afbeeldingen van de speelkaarten
 def deck_loader():
     path = 'Project/Media/cards/'
     for filename in os.listdir(path):                                   # zoek in juiste map
         full_path = os.path.join(path, filename)                        # maak een path, inclusief .png-bestand        
         key, _ = os.path.splitext(filename)                             # de key van mijn dict is de naam van de file.
         image_surface = pygame.image.load(full_path).convert_alpha()    # laad de afbeelding en zet om in alpha om sneller te renderen
-        yield key, image_surface                                        # zoals return, maar met herhaling.
+        yield key, image_surface                                        # Yield is zoals return, maar in een loop
 
 def reset_game():
-    global game_deck, initial_deal, my_hand, dealer_hand, active, reveal_dealer, hand_active, outcome, add_score, results, dealer_score, player_score, card_player_y, card_dealer_y
+    global on_place, sound, game_deck, initial_deal, my_hand, dealer_hand, active, reveal_dealer, hand_active, outcome, add_score, results, dealer_score, player_score, card_player_y, card_dealer_y
     # set variables
     active = True
     initial_deal = True                     # two cards
-    deck = dict(deck_loader())                                    #deck[Clovers_2] zou nu moeten werken.
     game_deck = copy.deepcopy(decks*one_deck)       # making an original deck. 
     my_hand = []
     dealer_hand = []
@@ -151,11 +156,13 @@ def reset_game():
     reveal_dealer = False
     dealer_score = 0
     player_score = 0
+    sound = True
+    on_place = False
     # reset cards naar outside 
     card_player_y = 1000
-    card_dealer_y = 1000
+    card_dealer_y = -280
 
-# deal cards by selecting randomnly from deck
+## deal cards by selecting randomnly from deck
 def deal_cards(current_hand, current_deck):
     
     card = random.randint(0,len(current_deck))
@@ -163,25 +170,27 @@ def deal_cards(current_hand, current_deck):
     current_deck.pop(card-1)
     return current_hand, current_deck
 
+# toon outcome hand
 def draw_scores(player,dealer):
     screen.blit(font.render(f'Player has {player}', True, color_white), (310, 430))
     if reveal_dealer:
         screen.blit(font.render(f'Dealer has {dealer}', True, color_white),(310, 130)) 
 
+## zet kaarten op juiste plaats.
 def move_cards():
     global card_player_y, card_dealer_y
     target_player_y = 510
     target_dealer_y = 210
-    
     if card_player_y > target_player_y:
        card_player_y += card_speed * -54
-    if card_dealer_y > target_dealer_y:
-        card_dealer_y += card_speed * -84
+    if card_dealer_y < target_dealer_y:
+        card_dealer_y += card_speed * 54
 
     else: 
         draw_scores(player_score, dealer_score)
+        return True
 
-# draw cards visueel op scherm
+# teken kaarten op scherm
 def draw_cards(player, dealer, reveal):
     
     for i in range(len(player)):
@@ -196,13 +205,13 @@ def draw_cards(player, dealer, reveal):
          card = Card("back", "card", i, card_dealer_y)
         Card.draw_card(card)
         
-#get best score possible
+# bereken de score.
 def calculate_score(hand):
     #calculate hand score fresh every time. check Aces
     hand_score = 0
     aces_count = 0
     for i in range(len(hand)):
-        for j in range(8):
+        for j in range(8):                          # 2-9
             if hand[i][0] == one_deck[j][0]:        # zoek enkel in de waardes.
                 hand_score += int(hand[i][0])
         if hand[i][0] in ['10','Jack', 'Queen', 'King']:
@@ -215,37 +224,46 @@ def calculate_score(hand):
         if hand_score > 21:
             hand_score-=10
         aces_count -= 1
+
     return hand_score
 
-# conditions en buttons voor draw game
-def draw_game(act, records, result, hand_act):
-    button_list = []
+def draw_buttons (action):
+    button_list =[]
+
+    # button voor reset score
+    reset_img = pygame.image.load("Project/Media/reset.png")
+    reset = reset_img.get_rect(center=(550,860))
+    screen.blit(reset_img, reset)
+    button_list.append(reset)
+
     # initially on startup (not act). You can only deal
-    if not act:
-        deal = Rectangle.draw_rect(Rectangle("START", color_black, 300, 80, 180, True))
+    if action == 'deal':
+        deal = Rectangle.draw_rect(Rectangle("DEAL", color_black, 300, 80, 180, True))
         button_list.append(deal)
+    elif action == 'play':
+        hit = Rectangle.draw_rect(Rectangle("HIT ME", color_black, 150, 780, 200, True))
+        stand = Rectangle.draw_rect(Rectangle("STAND", color_black, 450, 780, 200, True))
+        button_list.append(hit)
+        button_list.append(stand)
+    
+    return button_list
 
-    # Game started = hit & stand tonen + win/loss-record
-    else:
-        if hand_act:
-            hit = Rectangle.draw_rect(Rectangle("HIT ME", color_black, 150, 780, 200, True))
-            stand = Rectangle.draw_rect(Rectangle("STAND", color_black, 450, 780, 200, True))
-            button_list.append(hit)
-            button_list.append(stand)
-        
-        score_text = font_small.render(f'Wins: {records[0]}   Losses: {records[1]}    Draws: {records[2]}', True, color_white)
-        screen.blit(score_text,(15,840))
+def play_sound(result):
+    global sound
+    if sound == True:
+        if result == 1 or result == 3:
+            pygame.mixer.music.load(lost_sound)
+            pygame.mixer.music.play()
+        if result == 2:
+            pygame.mixer.music.load(success_sound)
+            pygame.mixer.music.play()
+    sound = False
 
-        # reset score
-        reset_img = pygame.image.load("Project/Media/reset.png")
-        reset = reset_img.get_rect(center=(550,860))
-        screen.blit(reset_img, reset)
-        button_list.append(reset)
-
-    # restart when done playing
+def show_result(result):
     if result != 0:
-        #tekst als spel klaar
-        
+        # tekst als spel klaar
+        pygame.time.wait(600)
+        # 1 = busted, 2 is win, 3 is lose, 4 is draw.
         if result == 1:
             text_color = color_red
             length = 340
@@ -260,11 +278,25 @@ def draw_game(act, records, result, hand_act):
             length = 140
 
         Rectangle.draw_rect(Rectangle(results[result], text_color, 300, 260, length, False))
+        play_sound(result)
 
-        #opnieuw spelen?
-        deal = Rectangle.draw_rect(Rectangle(" DEAL", color_black, 300, 80, 180, True))
-        button_list.append(deal)
+# Teken buttons & inforechthoeken
+def draw_game(act, records, result, hand_act):
+    # buttons
+    if not act:
+        button_list = draw_buttons("deal")
+    elif hand_act:
+        button_list = draw_buttons("play")
+    else:
+        button_list = draw_buttons("deal")
+    
+    # scores
+    score_text = font_small.render(f'Wins: {records[0]}   Losses: {records[1]}    Draws: {records[2]}', True, color_white)
+    screen.blit(score_text,(15,840))
 
+    # results
+    
+    show_result(result)
     return button_list
 
 def check_endgame(hand_act, deal_score, play_score, result, totals, add):
@@ -283,8 +315,6 @@ def check_endgame(hand_act, deal_score, play_score, result, totals, add):
             if result == 1 or result == 3:
                 totals[1] += 1
             elif result == 2:
-                pygame.mixer.music.load(success_sound)
-                pygame.mixer.music.play()
                 totals[0] += 1
             else:
                 totals[2] += 1
@@ -303,16 +333,16 @@ def check_endgame(hand_act, deal_score, play_score, result, totals, add):
 
 def ask_reset(records):
     while True:
+        # teken een rechthoek en vraag om de score te resetten
         pygame.draw.rect(screen, color_green, (0, 0, WIDTH, HEIGHT- 60))
         Rectangle.draw_rect(Rectangle("Reset scores?", color_black, 300, 300, 400, False))
         reset_button = Rectangle.draw_rect(Rectangle("RESET", color_red, 125, 400, 200, True))
-        cancel_button = Rectangle.draw_rect(Rectangle("CANCEL", color_white, 450, 400, 200, True))
+        cancel_button = Rectangle.draw_rect(Rectangle("CANCEL", color_black, 450, 400, 200, True))
         pygame.display.update()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT: 
                 pygame.quit()
-                raise SystemExit
             
             if event.type == pygame.MOUSEMOTION:
                 hover = False
@@ -362,7 +392,12 @@ while run:
             if dealer_score < 17:
                 dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
         draw_cards(my_hand, dealer_hand, reveal_dealer)
-        move_cards()
+        on_place = move_cards()
+        #check ending
+        if on_place:
+            if hand_active and player_score >= 21:
+                hand_active = False
+                reveal_dealer = True
     
     buttons = draw_game(active, records, outcome, hand_active)
 
@@ -382,38 +417,34 @@ while run:
 
         if event.type == pygame.MOUSEBUTTONUP:               #start game bij klik op Deal
             pygame.mouse.set_cursor(*pygame.cursors.tri_left)
-            if not active:                                   # er is maar 1 rectangle
-                if buttons[0].collidepoint(event.pos):
-                    reset_game()
-                    pygame.mixer.music.load(hitme_sound)
-                    pygame.mixer.music.play()
-            elif len(buttons)==3:
+            if buttons[0].collidepoint(event.pos):
+                    records = ask_reset(records)    
+            # play is 3 buttons: 0: reset, 1: hitme, 2: stand  
+            elif len(buttons) == 3 and on_place:
                 #you can hit
-                if buttons[0].collidepoint(event.pos) and player_score < 21 and hand_active:
+                if buttons[1].collidepoint(event.pos) and player_score < 21 and hand_active:
                     pygame.mixer.music.load(hitme_sound)
                     pygame.mixer.music.play()
                     my_hand, game_deck = deal_cards(my_hand,game_deck)
                 #you can stand
-                elif buttons[1].collidepoint(event.pos) and not reveal_dealer:
+                elif buttons[2].collidepoint(event.pos) and not reveal_dealer:
                     reveal_dealer = True
                     hand_active = False
-                #you can reset
-                elif buttons[2].collidepoint(event.pos):
-                    records = ask_reset(records)
-
+            # deal is altijd 2 buttons: 0:reset, 1:deal
             elif len(buttons) == 2:
                 if buttons[1].collidepoint(event.pos):
+                    reset_game()
+                    pygame.mixer.music.load(hitme_sound)
+                    pygame.mixer.music.play()
+                
+
+        if event.type == pygame.KEYDOWN:               #start game bij enter
+            if len(buttons) == 2:
+                if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
                     pygame.mixer.music.load(hitme_sound)
                     pygame.mixer.music.play()
                     reset_game()
-
-        if event.type == pygame.KEYDOWN:               #start game bij enter
-            if not active or len(buttons) == 2:
-                if event.key == pygame.K_RETURN:
-                        pygame.mixer.music.load(hitme_sound)
-                        pygame.mixer.music.play()
-                        reset_game()
-            else:
+            elif on_place:
                 #you can hit
                 if event.key == pygame.K_h and player_score < 21 and hand_active:
                     pygame.mixer.music.load(hitme_sound)
@@ -425,10 +456,7 @@ while run:
                     hand_active = False
                 
 
-    #check ending
-    if hand_active and player_score >= 21:
-        hand_active = False
-        reveal_dealer = True
+    
 
     outcome, records, add_score = check_endgame(hand_active, dealer_score, player_score,outcome, records, add_score)
     pygame.display.flip()       

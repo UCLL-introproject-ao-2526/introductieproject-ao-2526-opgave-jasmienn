@@ -1,6 +1,6 @@
 Totaal: 
 Tutorial: 2u
-Updating: 14u
+Updating: 16.30
 
 # 22/02
 
@@ -133,3 +133,20 @@ Player wins komt al voor kaarten gedeeld zijn, dat is vervelend.
 ## 17.45
 Het spel werkt, het spel ziet er goed uit. 
 Tijd om ook de code op te ruimen en van comments te voorzien.
+
+# 08/03 (1u)
+## 12.30
+Het is zeer verwarrend met de knoppen, ik denk dat je beter met namen werkt
+
+## 13.30
+Ik ben het spel aan het opschonen met extra functies. 
+Nu kloppen mijn buttons niet meer, maar dat is voor de volgende keer. 
+
+# 10/03 (1u30)
+## 21.00
+Ik heb wat geprutst met het geluid en de komst van het kader dat zegt of je wint. Het kwam te snel vond ik.
+Nu is er echter een probleem als de speler meteen wint. Er is een probleem als de kaarten nog niet uitgemoved zijn.
+Ik heb het opgelost met nog een variabele. Dat vind ik nog niet zo proper. Ik zit vast met die reset_game(). 
+
+Ik denk dat ik dat moet oplossen met een klasse Game.
+
