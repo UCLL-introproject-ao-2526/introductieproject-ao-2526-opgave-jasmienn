@@ -1,6 +1,6 @@
 Totaal: 
 Tutorial: 2u
-Updating: 18u
+Updating: 19u30
 
 # 22/02
 
@@ -160,7 +160,7 @@ Ik waag in mijn overige 3u wellicht nog een nieuwe poging, maar vanavond niet me
 Ik heb een uurtje geprobeerd, maar ik geraak er niet aan uit. Ik heb nog niet genoeg kennis om het huidige spel om te zetten in klasses of OOP.
 
 
-# 13/03 (2u)
+# 13/03 (1u30)
 ## 10.00
 Ik heb een halfuurtje try & except toegevoegd. Zo kan het spel gespeeld worden zonder geluid. 
 Nu ga ik nog 1 iets toevoegen: een inputbox, om te tonen dat ik dat ook kan... 
@@ -171,3 +171,6 @@ It's all fun, maar nu werk ik mezelf in de nesten met mijn opgeslagen scores nat
 Ik heb nog 1u, kan ik dit probleem daarin oplossen.
 
 OEPS! Ik moet ook nog feedback vragen en verwerken. 
+
+Todo when more time:
+    - de ask reset & ask name lijken nogal op elkaar. Dit kan ik misschien nog in 1 functie gieten.
