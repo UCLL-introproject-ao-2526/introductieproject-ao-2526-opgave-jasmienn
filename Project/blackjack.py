@@ -427,7 +427,7 @@ def ask_name(name_player):
         pygame.draw.rect(screen, color_green, (0, 0, WIDTH, HEIGHT-60))
         Rectangle.draw_rect(Rectangle("What's your name?", color_black, 300, 200, 500, False))
         answer_box = Rectangle.draw_rect(Rectangle(None, color_black, 300, 300, 400, False))
-        accept_button = Rectangle.draw_rect(Rectangle("START", color_red, 125, 400, 200, True))
+        accept_button = Rectangle.draw_rect(Rectangle("START", color_black, 450, 400, 200, True))
 
         text_surface = font.render(name_player, True, color_black)
         screen.blit(text_surface, (170, 275))
