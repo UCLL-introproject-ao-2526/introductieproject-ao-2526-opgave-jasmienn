@@ -162,8 +162,7 @@ class Screen:
             button_list = draw_buttons("deal")
         
         # scores
-        score_text = font_small.render(f'Wins: {records[0]}   Losses: {records[1]}    Draws: {records[2]}', True, color_white)
-        screen.blit(score_text,(15,840))
+        show_records()
 
         # results
         show_result(result)
@@ -334,6 +333,10 @@ def show_result(result):
         Rectangle.draw_rect(Rectangle(results[result], text_color, 300, 260, length, False))
         play_sound(result)
 
+def show_records():
+        score_text = font_small.render(f'Wins: {records[0]}   Losses: {records[1]}    Draws: {records[2]}', True, color_white)
+        screen.blit(score_text,(15,840))
+
 # Teken buttons & inforechthoeken
 def draw_game(act, records, result, hand_act):
     # buttons
@@ -421,7 +424,7 @@ def ask_reset(records):
 def ask_name(name_player):
     while True:
         # teken een rechthoek en vraag de naam van de speler
-        pygame.draw.rect(screen, color_green, (0, 0, WIDTH, HEIGHT- 60))
+        pygame.draw.rect(screen, color_green, (0, 0, WIDTH, HEIGHT-60))
         Rectangle.draw_rect(Rectangle("What's your name?", color_black, 300, 200, 500, False))
         answer_box = Rectangle.draw_rect(Rectangle(None, color_black, 300, 300, 400, False))
         accept_button = Rectangle.draw_rect(Rectangle("START", color_red, 125, 400, 200, True))
@@ -472,6 +475,8 @@ with open("Project/scores.txt", "r") as f:
     records = f.read().splitlines()
     records = [int(i) for i in records]
 
+
+
 while run:
     # run the game at fps & fill screen with bg-color
     timer.tick(fps)
@@ -483,15 +488,18 @@ while run:
     
     #initial deal
     if initial_deal:
-        if name == '':
+        show_records()
+        if name == '': 
             name = ask_name(name)
-        results = ['',f'{name} is busted',f'{name} wins', 'Dealer wins', 'Draw']
+            ask_reset(records)
         for i in range(2):
             my_hand, game_deck = deal_cards(my_hand, game_deck)
             dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
         initial_deal = False
     #once game is activated & dealt > calculate scores & display cards
     if active:
+        
+        results = ['',f'{name} is busted',f'{name} wins', 'Dealer wins', 'Draw']
         player_score = calculate_score(my_hand)
         if reveal_dealer == True:
             dealer_score = calculate_score(dealer_hand)
