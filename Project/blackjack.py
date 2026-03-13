@@ -408,7 +408,17 @@ def ask_reset(records):
                         hover = True
                 if hover == True:
                     pygame.mouse.set_cursor(*pygame.cursors.diamond)
-        
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    with open("Project/scores.txt", "w") as f:
+                        for i in range(3):
+                            f.write("0\n")
+                    with open("Project/scores.txt", "r") as f:
+                        records = f.read().splitlines()
+                        records = [int(i) for i in records]
+                    return records
+
             if event.type == pygame.MOUSEBUTTONUP:               
                 if reset_button.collidepoint(event.pos):
                     with open("Project/scores.txt", "w") as f:
@@ -475,8 +485,6 @@ with open("Project/scores.txt", "r") as f:
     records = f.read().splitlines()
     records = [int(i) for i in records]
 
-
-
 while run:
     # run the game at fps & fill screen with bg-color
     timer.tick(fps)
@@ -491,7 +499,7 @@ while run:
         show_records()
         if name == '': 
             name = ask_name(name)
-            ask_reset(records)
+            records = ask_reset(records)   
         for i in range(2):
             my_hand, game_deck = deal_cards(my_hand, game_deck)
             dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
