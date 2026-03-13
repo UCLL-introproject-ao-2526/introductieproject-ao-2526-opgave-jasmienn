@@ -1,0 +1,30 @@
+Reflectie bij video
+https://www.youtube.com/watch?v=iwUR0kOVNs8
+
+Bryan Liles gaf een speech op een Ruby-evenement in 2008. Daar vertelt hij dat je altijd moet testen. 
+Hiermee bedoelt hij dat je testgedreven moet programmeren. Dit wordt ook wel TDD of test-driven development genoemd.
+Eerst gaat hij in op zijn programmeerevolutie. 
+Hij begon met de programmeertaal Perl en ging later over naar Java.
+Dit ging niet altijd goed, omdat hij slechte tests schreef. Er was bijvoorbeeld geen eenheid. 
+Na Java ging hij naar Ruby on rails, maar ook daar waren zijn tests slecht.
+Dus oefende hij en schreef hij meer en meer tests. 
+Daarna maakt hij de switch naar TDD: eerst tests schrijven, dan pas code schrijven.
+Ook dit vond hij moeilijk, maar toen leerde hij RSpec kennen. 
+Het voordeel hiervan is dat je test mét context. Hij oefende en oefende tot hij er goed in was. 
+Nog later ontdekte hij behavior driven development. 
+Voor Liles komt beschrijven wat je code moet doen op hetzelfde neer als test driven development. 
+Eerst moet je nadenken over voorbeelden van gedrag van je programma en dan schrijf je tests die dit testen. 
+Als het eerst moeilijk is of lang duurt, is dit helemaal oké, je moet dit oefenen. 
+Zijn belangrijkste punt is dat we code schrijven zodat onze specs (BDD) en onze tests (TDD) voldaan zijn. 
+Ook interessant om mee te nemen, voor als ik met Ruby aan de slag ga: Test::Unit, Shoulda en RSpec StoryRunner. 
+Ook Cucumber is de moeite. Natuurlijk zijn we ondertussen 18 jaar later… 
+
+Toevallig vroeg ik laatst aan een softwaredeveloper wat een goede van een heel goede programmeur onderscheidt.
+Hij antwoordde: "een heel goede programmeur schrijft zijn tests voor hij begint te programmeren."
+Persoonlijk denk ik ook dat je er achteraf tijd mee uitspaart: je code zit beter in elkaar en je hebt minder bugs. 
+Door op voorhand na te denken over alle mogelijke uitkomsten, zal je bewuster programmeren en achteraf minder moeten debuggen. 
+Ik kijk al uit naar vakken waarin we dit leren. 
+Ik ga niet helemaal akkoord dat BDD en TDD hetzelfde zijn. Ik denk dat je soms keuzes moet maken op basis van budget en tijd.
+
+Op een grappige manier overtuigt Bryan Liles dat je moet kiezen voor TDD én BDD. 
+Ik denk dat hij gelijk heeft, omdat je zo betere code schrijft en later tijd wint. 

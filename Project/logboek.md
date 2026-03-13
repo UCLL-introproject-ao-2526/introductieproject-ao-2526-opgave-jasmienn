@@ -1,6 +1,6 @@
 Totaal: 
 Tutorial: 2u
-Updating: 17u
+Updating: 18u
 
 # 22/02
 
@@ -154,3 +154,20 @@ Ik heb nog geprobeerd om een klasse Game of Score te maken, maar dat lukt me mom
 Ik denk al die variabelen van reset, want dat zijn de kenmerken van de game. Als deze veranderen, verandert er iets in de game.
 Ik waag in mijn overige 3u wellicht nog een nieuwe poging, maar vanavond niet meer.
 
+# 11/03 (1u)
+
+## 20.30
+Ik heb een uurtje geprobeerd, maar ik geraak er niet aan uit. Ik heb nog niet genoeg kennis om het huidige spel om te zetten in klasses of OOP.
+
+
+# 13/03 (2u)
+## 10.00
+Ik heb een halfuurtje try & except toegevoegd. Zo kan het spel gespeeld worden zonder geluid. 
+Nu ga ik nog 1 iets toevoegen: een inputbox, om te tonen dat ik dat ook kan... 
+Mijn inspiratiebron: https://www.geeksforgeeks.org/python/how-to-create-a-text-input-box-with-pygame/
+
+## 11.30
+It's all fun, maar nu werk ik mezelf in de nesten met mijn opgeslagen scores natuurlijk...
+Ik heb nog 1u, kan ik dit probleem daarin oplossen.
+
+OEPS! Ik moet ook nog feedback vragen en verwerken. 
