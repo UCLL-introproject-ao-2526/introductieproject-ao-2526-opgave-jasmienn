@@ -19,6 +19,7 @@ pygame.init()                           #nodig voor font
 # VARIABLES
 
 # e = diamond, q = spade, r = heart, w = club (dit komt door het lettertype)
+# [dn] dit is nogal veel repititie. Misschien is er een manier dat je enkel de 4 'suits' 1 keer moet schrijven, end de 'rank' (1-10, jqk) ook? 
 one_deck = [
     ['2','Hearts'], ['3','Hearts'], ['4','Hearts'], ['5','Hearts'], ['6','Hearts'], ['7','Hearts'], ['8','Hearts'], ['9','Hearts'], ['10','Hearts'], ['Jack','Hearts'], ['Queen','Hearts'], ['King','Hearts'], ['A','Hearts'],
     ['2','Pikes'], ['3','Pikes'], ['4','Pikes'], ['5','Pikes'], ['6','Pikes'], ['7','Pikes'], ['8','Pikes'], ['9','Pikes'], ['10','Pikes'], ['Jack','Pikes'], ['Queen','Pikes'], ['King','Pikes'], ['A','Pikes'],
@@ -44,7 +45,10 @@ except:
     font = pygame.font.Font(None, 44)
     font_small = pygame.font.Font(None, 32)
 
-
+# [dn] ik denk dat pygame al presets heeft voor kleur, maar slim gezien
+# waarom niet verder trekken? color_card = white, color_table = green. Zo
+# staan de kleuren (design context) niet tussen de teken code (programmeer
+# context)
 color_black = "#2F2D2D"
 color_red = '#FF5555'
 color_white ="#FFFFFF"
@@ -64,12 +68,21 @@ except:
 
 
 # deck & hands goedzetten
+# [dn] 'goedzetten' -> initializeren. Leest makkelijker als iedereen dezelfde 
+# woorden gebruik :)
 game_deck = copy.deepcopy(decks*one_deck)
 initial_deal = True
 my_hand=[]
 dealer_hand=[]
+
+# [dn] schrijf commentaar als het niet duidelijk is van de variabele naam
+# waar een variabele voor dient. Bvb active. Wat is active? The dealer? dealer_active
+# of nog beter, dealer_is_active. Zelfde voor deal. Bij 'reveal dealer' kan ik wel 
+# aannemen wat die variabele doet
 active = False
 deal = True
+
+
 reveal_dealer = False 
 hand_active = False
 add_score = False
@@ -249,6 +262,13 @@ def draw_cards(player, dealer, reveal):
         Card.draw_card(card)
         
 # bereken de score.
+# [dn] dit werkt, maar het kan nog simpler
+# bvb (geen echte code) card = [rank, suits, value]
+# SUIT_SPACE = 3
+# [9, SUIT_SPADE, 9]
+# RANK_QUEEN = 12 
+# VALUE_QUEEN = 10
+# [RANK_QUEEN, SUIT_SPADE, VALUE_QUEEN]
 def calculate_score(hand):
     #calculate hand score fresh every time. check Aces
     hand_score = 0
@@ -296,13 +316,18 @@ def draw_buttons (action):
 
 def play_sound(result):
     global sound
-    if sound == True:
+    if sound == True: # [dn] of, in de volksmond, if sound: ;)
+        # [dn] ik ben fan van van variabel name, je merkt het
+        # waarom niet
+        # RESULT_LOST = 1
+        # if RESULT_LOST:
         if result == 1 or result == 3:
             try:
                 pygame.mixer.music.load(lost_sound)
                 pygame.mixer.music.play()
             except:
-                print("No sound found")
+                print("No sound found") # [dn] niet "no sound", dat betekent geen enkel geluid.
+                # waarom niet lost_sound printen dat je meer info hebt?
         if result == 2:
             try:
                 pygame.mixer.music.load(success_sound)
@@ -319,6 +344,7 @@ def show_result(result):
         # 1 = busted, 2 is win, 3 is lose, 4 is draw.
         if result == 1:
             text_color = color_red
+            # [dn] als ik deze methode lees, and ik zie length, heb ik geen idee waarvoor die dient
             length = 320 + len(name)*15
         elif result == 2:
             text_color = color_green
@@ -357,7 +383,7 @@ def draw_game(act, records, result, hand_act):
     return button_list
 
 def check_endgame(hand_act, deal_score, play_score, result, totals, add):
-    # 1: busted 2: win 3: lose 4: draw
+    # 1: busted 2: win 3: lose 4: draw [dn] in een variabele! dan zie je de naam ook waar het gebruikt word
     if not hand_act and deal_score >= 17:
         if play_score > 21:
             result = 1
@@ -419,6 +445,7 @@ def ask_reset(records):
                         records = [int(i) for i in records]
                     return records
 
+            # [dn] dit is wel veel repitie als bij keydown. waarom niet if button_down of key_down_return?
             if event.type == pygame.MOUSEBUTTONUP:               
                 if reset_button.collidepoint(event.pos):
                     with open("Project/scores.txt", "w") as f:
@@ -450,8 +477,13 @@ def ask_name(name_player):
             if event.type == pygame.MOUSEMOTION:
                 hover = False
                 pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+                
+                # [dn] if verwacht een boolean, je zet een boolean. Waarom niet 
+                #hover = answer_box.collidepoint(event.pos) or accept_button.collidepoint(event.pos)
                 if answer_box.collidepoint(event.pos) or accept_button.collidepoint(event.pos):
                         hover = True
+
+                # [dn] dit is de enigne plaats waar je hover gebruikt
                 if hover == True:
                     pygame.mouse.set_cursor(*pygame.cursors.diamond)
             
@@ -486,6 +518,8 @@ with open("Project/scores.txt", "r") as f:
     records = [int(i) for i in records]
 
 while run:
+    # [dn] hier staat wel veel branchy (binnen if statement) logic in. misschien properder het in een
+    # paar methodes te steken?
     # run the game at fps & fill screen with bg-color
     timer.tick(fps)
     try:
