@@ -174,3 +174,11 @@ OEPS! Ik moet ook nog feedback vragen en verwerken.
 
 Todo when more time:
     - de ask reset & ask name lijken nogal op elkaar. Dit kan ik misschien nog in 1 functie gieten.
+
+# 17/03
+## 9.00
+Daan heeft feedback gegeven. Ik zal deze feedback verwerken.
+* de deck maken via loops ipv een lange list. Ik zie niet meteen de meerwaarde, tenzij een kaartspel zou veranderen. De tip om de rank en value los te maken van elkaar vind ik wel een meerwaarde.
+* Ik vind het een goede tip om design-kleur en programmeerkleur uit elkaar te trekken.
+
+

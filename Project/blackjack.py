@@ -19,13 +19,13 @@ pygame.init()                           #nodig voor font
 # VARIABLES
 
 # e = diamond, q = spade, r = heart, w = club (dit komt door het lettertype)
-# [dn] dit is nogal veel repititie. Misschien is er een manier dat je enkel de 4 'suits' 1 keer moet schrijven, end de 'rank' (1-10, jqk) ook? 
-one_deck = [
-    ['2','Hearts'], ['3','Hearts'], ['4','Hearts'], ['5','Hearts'], ['6','Hearts'], ['7','Hearts'], ['8','Hearts'], ['9','Hearts'], ['10','Hearts'], ['Jack','Hearts'], ['Queen','Hearts'], ['King','Hearts'], ['A','Hearts'],
-    ['2','Pikes'], ['3','Pikes'], ['4','Pikes'], ['5','Pikes'], ['6','Pikes'], ['7','Pikes'], ['8','Pikes'], ['9','Pikes'], ['10','Pikes'], ['Jack','Pikes'], ['Queen','Pikes'], ['King','Pikes'], ['A','Pikes'],
-    ['2','Clovers'], ['3','Clovers'], ['4','Clovers'], ['5','Clovers'], ['6','Clovers'], ['7','Clovers'], ['8','Clovers'], ['9','Clovers'], ['10','Clovers'], ['Jack','Clovers'], ['Queen','Clovers'], ['King','Clovers'], ['A','Clovers'],
-    ['2','Tiles'], ['3','Tiles'], ['4','Tiles'], ['5','Tiles'], ['6','Tiles'], ['7','Tiles'], ['8','Tiles'], ['9','Tiles'], ['10','Tiles'], ['Jack','Tiles'], ['Queen','Tiles'], ['King','Tiles'], ['A','Tiles']
-]
+# [dn][ok] dit is nogal veel repititie. Misschien is er een manier dat je enkel de 4 'suits' 1 keer moet schrijven, end de 'rank' (1-10, jqk) ook? 
+suit_cards = ["Hearts", "Pikes", "Clovers", "Tiles"]
+values_cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King']
+one_deck = []
+for suit in suit_cards:
+    for value in values_cards:
+        one_deck += [[value, suit]]
 
 decks = 4
 
@@ -45,16 +45,19 @@ except:
     font = pygame.font.Font(None, 44)
     font_small = pygame.font.Font(None, 32)
 
-# [dn] ik denk dat pygame al presets heeft voor kleur, maar slim gezien
-# waarom niet verder trekken? color_card = white, color_table = green. Zo
-# staan de kleuren (design context) niet tussen de teken code (programmeer
-# context)
+# color-codes
 color_black = "#2F2D2D"
 color_red = '#FF5555'
 color_white ="#FFFFFF"
 color_green = "#27613e" 
 
-# Media
+# design - color
+color_lost = color_red
+color_win = color_green
+color_bg = color_green
+color_draw = color_black
+
+# Load Media
 try:
     background = pygame.image.load("Project/Media/Green.png")
 except:
@@ -64,51 +67,41 @@ try:
     hitme_sound = 'Project/Media/hitme.mp3'
     lost_sound = 'Project/Media/lost.mp3'
 except:
-    print("No sound")
+    print("Couldn't find sound-files.")
 
 
-# deck & hands goedzetten
-# [dn] 'goedzetten' -> initializeren. Leest makkelijker als iedereen dezelfde 
-# woorden gebruik :)
+# deck & hands initializeren
 game_deck = copy.deepcopy(decks*one_deck)
 initial_deal = True
-my_hand=[]
-dealer_hand=[]
+my_hand = []
+dealer_hand = []
 
-# [dn] schrijf commentaar als het niet duidelijk is van de variabele naam
-# waar een variabele voor dient. Bvb active. Wat is active? The dealer? dealer_active
-# of nog beter, dealer_is_active. Zelfde voor deal. Bij 'reveal dealer' kan ik wel 
-# aannemen wat die variabele doet
-active = False
-deal = True
-
-
+# settings game initializeren
+game_is_active = False
 reveal_dealer = False 
-hand_active = False
+player_can_hit = False
 add_score = False
-name = ''
-outcome = 0 
+name_player = ''
+result_round = 0 
 sound = True
-on_place = False
-
+cards_are_on_place = False
 
 # startpositie kaarten
-card_player_y = 1000
-card_dealer_y = -280
+card_player_start_y = 1000
+card_dealer_start_y = -280
 card_speed = 0.3
 
 # win loss draw
-records = [0,0,0]
-player_score = 0
-dealer_score = 0 
-
+records = [0, 0, 0]
+player_score_round = 0
+dealer_score_round = 0 
 
 # klasse voor buttons & info-rechthoeken
 class Rectangle:
     
     def __init__(self, name, color:str, x:int, y:int, w:int, button:bool):
         self.name = name
-        self.color=color
+        self.color =color
         self.x = x
         self.y = y
         self.w = w
@@ -123,11 +116,11 @@ class Rectangle:
             border = 3
             radius = 0
         rect = pygame.Rect(0, 0, self.w, self.h)
-        rect.center=(self.x, self.y)
+        rect.center =(self.x, self.y)
         rechthoek = pygame.draw.rect(screen, color_white, rect, 0, radius)
         pygame.draw.rect(screen, self.color, rect, border, radius)
         text = font.render(self.name, True, self.color)
-        text_rect = text.get_rect(center=(self.x, self.y))
+        text_rect = text.get_rect(center =(self.x, self.y))
         screen.blit(text, text_rect)
 
         return rechthoek
@@ -138,7 +131,7 @@ class Card:
     height = 220
     card_radius = 15
     x_pos = 70
-    def __init__(self, card_value, symbol, card_number,y_pos):
+    def __init__(self, card_value, symbol, card_number, y_pos):
         #symbols = Tiles, Cloves, Pikes, Hearts
         self.symbol = symbol
         self.card_value = card_value
@@ -194,71 +187,72 @@ def deck_loader():
             yield key, image_surface                                        # Yield is zoals return, maar in een loop
     except:
         Rectangle.draw_rect(Rectangle("Game's broken", color_black, 300, 300, 400, False))
-        global active
-        active = False
+        global game_is_active
+        game_is_active = False
 
 def reset_game():
-    global on_place, sound, game_deck, initial_deal, my_hand, dealer_hand, active, reveal_dealer, hand_active, outcome, add_score, results, dealer_score, player_score, card_player_y, card_dealer_y
+    global cards_are_on_place, sound, game_deck, initial_deal, my_hand, dealer_hand, game_is_active, reveal_dealer, player_can_hit, result_round, add_score, results, dealer_score_round, player_score_round, card_player_start_y, card_dealer_start_y
     # set variables
-    active = True
+    game_is_active = True
     initial_deal = True                     # two cards
     game_deck = copy.deepcopy(decks*one_deck)       # making an original deck. 
     my_hand = []
     dealer_hand = []
-    outcome = 0
-    hand_active = True
+    result_round = 0
+    player_can_hit = True
     add_score = True
     reveal_dealer = False
-    dealer_score = 0
-    player_score = 0
+    dealer_score_round = 0
+    player_score_round = 0
     sound = True
-    on_place = False
+    cards_are_on_place = False
     # reset cards naar outside 
-    card_player_y = 1000
-    card_dealer_y = -280
+    card_player_start_y = 1000
+    card_dealer_start_y = -280
 
 ## deal cards by selecting randomnly from deck
 def deal_cards(current_hand, current_deck):
     
-    card = random.randint(0,len(current_deck))
+    card = random.randint(0, len(current_deck))
     current_hand.append(current_deck[card-1])
     current_deck.pop(card-1)
     return current_hand, current_deck
 
 # toon outcome hand
-def draw_scores(player,dealer):
-    global name
-    screen.blit(font.render(f'{name} has {player}', True, color_white), (350-(len(name)*20), 430))
+# de positie van de tekst is afhankelijk van de lengte van de naam van de player.
+def draw_scores(player, dealer):
+    global name_player
+    screen.blit(font.render(f'{name_player} has {player}', True, color_white), (350-(len(name_player)*20), 430))
     if reveal_dealer:
-        screen.blit(font.render(f'Dealer has {dealer}', True, color_white),(310, 130)) 
+        screen.blit(font.render(f'Dealer has {dealer}', True, color_white), (310, 130)) 
 
 ## zet kaarten op juiste plaats.
 def move_cards():
-    global card_player_y, card_dealer_y
+    global card_player_start_y, card_dealer_start_y
     target_player_y = 510
     target_dealer_y = 210
-    if card_player_y > target_player_y:
-       card_player_y += card_speed * -54
-    if card_dealer_y < target_dealer_y:
-        card_dealer_y += card_speed * 54
+    if card_player_start_y > target_player_y:
+       card_player_start_y += card_speed * -54
+    if card_dealer_start_y < target_dealer_y:
+        card_dealer_start_y += card_speed * 54
 
     else: 
-        draw_scores(player_score, dealer_score)
+        draw_scores(player_score_round, dealer_score_round)
         return True
 
 # teken kaarten op scherm
 def draw_cards(player, dealer, reveal):
     
     for i in range(len(player)):
-        card = Card(player[i][0], player[i][1], i, card_player_y)
+        card = Card(player[i][0], player[i][1], i, card_player_start_y)
         Card.draw_card(card)
     
     # if player hasn't finished turn, dealer will hide one card.
     for i in range(len(dealer)):
         if i != 0 or reveal:
-            card = Card(dealer[i][0], dealer[i][1], i, card_dealer_y)
+            card = Card(dealer[i][0], dealer[i][1], i, card_dealer_start_y)
         else:
-         card = Card("back", "card", i, card_dealer_y)
+         card = Card("back", "card", i, card_dealer_start_y)
         Card.draw_card(card)
         
 # bereken de score.
@@ -277,7 +271,7 @@ def calculate_score(hand):
         for j in range(8):                          # 2-9
             if hand[i][0] == one_deck[j][0]:        # zoek enkel in de waardes.
                 hand_score += int(hand[i][0])
-        if hand[i][0] in ['10','Jack', 'Queen', 'King']:
+        if hand[i][0] in ['10', 'Jack', 'Queen', 'King']:
             hand_score += 10
         elif hand[i][0] == 'A':
             hand_score += 11
@@ -296,10 +290,10 @@ def draw_buttons (action):
     # button voor reset score
     try:
         reset_img = pygame.image.load("Project/Media/reset.png")
-        reset = reset_img.get_rect(center=(550,860))
+        reset = reset_img.get_rect(center =(550, 860))
         screen.blit(reset_img, reset)
     except:
-        reset = pygame.draw.rect(screen, color_white, (535,845, 30, 30))
+        reset = pygame.draw.rect(screen, color_white, (535, 845, 30, 30))
     button_list.append(reset)
 
     # initially on startup (not act). You can only deal
@@ -337,7 +331,7 @@ def play_sound(result):
     sound = False
 
 def show_result(result):
-    global name
+    global name_player
     if result != 0:
         # tekst als spel klaar
         pygame.time.wait(600)
@@ -345,10 +339,10 @@ def show_result(result):
         if result == 1:
             text_color = color_red
             # [dn] als ik deze methode lees, and ik zie length, heb ik geen idee waarvoor die dient
-            length = 320 + len(name)*15
+            length = 320 + len(name_player)*15
         elif result == 2:
             text_color = color_green
-            length = 230 + len(name)*15
+            length = 230 + len(name_player)*15
         elif result == 3:
             text_color = color_red
             length = 270
@@ -361,7 +355,7 @@ def show_result(result):
 
 def show_records():
         score_text = font_small.render(f'Wins: {records[0]}   Losses: {records[1]}    Draws: {records[2]}', True, color_white)
-        screen.blit(score_text,(15,840))
+        screen.blit(score_text, (15, 840))
 
 # Teken buttons & inforechthoeken
 def draw_game(act, records, result, hand_act):
@@ -375,10 +369,9 @@ def draw_game(act, records, result, hand_act):
     
     # scores
     score_text = font_small.render(f'Wins: {records[0]}   Losses: {records[1]}    Draws: {records[2]}', True, color_white)
-    screen.blit(score_text,(15,840))
+    screen.blit(score_text, (15, 840))
 
     # results
-    
     show_result(result)
     return button_list
 
@@ -389,7 +382,7 @@ def check_endgame(hand_act, deal_score, play_score, result, totals, add):
             result = 1
         elif deal_score < play_score <= 21 or deal_score > 21:
             result = 2
-        elif play_score < deal_score <=21:
+        elif play_score < deal_score <= 21:
             result = 3
         else:
             result = 4
@@ -531,31 +524,31 @@ while run:
     #initial deal
     if initial_deal:
         show_records()
-        if name == '': 
-            name = ask_name(name)
+        if name_player == '': 
+            name_player = ask_name(name_player)
             records = ask_reset(records)   
         for i in range(2):
             my_hand, game_deck = deal_cards(my_hand, game_deck)
             dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
         initial_deal = False
     #once game is activated & dealt > calculate scores & display cards
-    if active:
+    if game_is_active:
         
-        results = ['',f'{name} is busted',f'{name} wins', 'Dealer wins', 'Draw']
-        player_score = calculate_score(my_hand)
+        results = ['', f'{name_player} is busted', f'{name_player} wins', 'Dealer wins', 'Draw']
+        player_score_round = calculate_score(my_hand)
         if reveal_dealer == True:
-            dealer_score = calculate_score(dealer_hand)
-            if dealer_score < 17:
+            dealer_score_round = calculate_score(dealer_hand)
+            if dealer_score_round < 17:
                 dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
         draw_cards(my_hand, dealer_hand, reveal_dealer)
-        on_place = move_cards()
+        cards_are_on_place = move_cards()
         #check ending
-        if on_place:
-            if hand_active and player_score >= 21:
-                hand_active = False
+        if cards_are_on_place:
+            if player_can_hit and player_score_round >= 21:
+                player_can_hit = False
                 reveal_dealer = True
     
-    buttons = draw_game(active, records, outcome, hand_active)
+    buttons = draw_game(game_is_active, records, result_round, player_can_hit)
 
     # event handling
     for event in pygame.event.get():
@@ -576,19 +569,19 @@ while run:
             if buttons[0].collidepoint(event.pos):
                     records = ask_reset(records)    
             # play is 3 buttons: 0: reset, 1: hitme, 2: stand  
-            elif len(buttons) == 3 and on_place:
+            elif len(buttons) == 3 and cards_are_on_place:
                 #you can hit
-                if buttons[1].collidepoint(event.pos) and player_score < 21 and hand_active:
+                if buttons[1].collidepoint(event.pos) and player_score_round < 21 and player_can_hit:
                     try:
                         pygame.mixer.music.load(hitme_sound)
                         pygame.mixer.music.play()
                     except:
                         print("no sound found")
-                    my_hand, game_deck = deal_cards(my_hand,game_deck)
+                    my_hand, game_deck = deal_cards(my_hand, game_deck)
                 #you can stand
                 elif buttons[2].collidepoint(event.pos) and not reveal_dealer:
                     reveal_dealer = True
-                    hand_active = False
+                    player_can_hit = False
             # deal is altijd 2 buttons: 0:reset, 1:deal
             elif len(buttons) == 2:
                 if buttons[1].collidepoint(event.pos):
@@ -606,21 +599,21 @@ while run:
                     pygame.mixer.music.load(hitme_sound)
                     pygame.mixer.music.play()
                     reset_game()
-            elif on_place:
+            elif cards_are_on_place:
                 #you can hit
-                if event.key == pygame.K_h and player_score < 21 and hand_active:
+                if event.key == pygame.K_h and player_score_round < 21 and player_can_hit:
                     pygame.mixer.music.load(hitme_sound)
                     pygame.mixer.music.play()
-                    my_hand, game_deck = deal_cards(my_hand,game_deck)
+                    my_hand, game_deck = deal_cards(my_hand, game_deck)
                 #you can stand
                 elif event.key == pygame.K_s and not reveal_dealer:
                     reveal_dealer = True
-                    hand_active = False
+                    player_can_hit = False
                 
 
     
 
-    outcome, records, add_score = check_endgame(hand_active, dealer_score, player_score,outcome, records, add_score)
+    result_round, records, add_score = check_endgame(player_can_hit, dealer_score_round, player_score_round, result_round, records, add_score)
     pygame.display.flip()       
 
 
