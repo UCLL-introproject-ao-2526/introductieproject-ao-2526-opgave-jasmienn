@@ -11,15 +11,13 @@ pygame.init()                           #nodig voor font
     Sound Effects (hit_me & success) by freesound_community from Pixabay
     Sound Effect (you lose) by Tuomas_Data from Pixabay
     Patroon background: https://prettywebz.com 
-    
     kaartontwerp by Victor MEUNIER. 
 '''
 
 
 # VARIABLES
 
-# e = diamond, q = spade, r = heart, w = club (dit komt door het lettertype)
-# [dn][ok] dit is nogal veel repititie. Misschien is er een manier dat je enkel de 4 'suits' 1 keer moet schrijven, end de 'rank' (1-10, jqk) ook? 
+# maak een deck
 suit_cards = ["Hearts", "Pikes", "Clovers", "Tiles"]
 rank_cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'A']
 values_cards = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
@@ -46,7 +44,7 @@ except:
     font = pygame.font.Font(None, 44)
     font_small = pygame.font.Font(None, 32)
 
-# color-codes
+# color - codes
 color_black = "#2F2D2D"
 color_red = '#FF5555'
 color_white ="#FFFFFF"
@@ -84,7 +82,7 @@ player_can_hit = False
 add_score = False
 name_player = ''
 sound = True
-cards_are_on_place = False
+cards_are_in_place = False
 result_round = 0
 
 
@@ -97,15 +95,6 @@ card_speed = 0.3
 records = [0, 0, 0]
 player_score_round = 0
 dealer_score_round = 0 
-
-def set_possible_outcomes(name_player):
-    possible_outcomes = ['', f'{name_player} is busted', f'{name_player} wins', 'Dealer wins', 'Draw']
-    outcome_lost = possible_outcomes[3]
-    outcome_win = possible_outcomes[2]
-    outcome_bust = possible_outcomes[1]
-    outcome_draw = possible_outcomes[4]
-    
-    return outcome_bust, outcome_lost, outcome_win, outcome_draw
 
 # klasse voor buttons & info-rechthoeken
 class Rectangle:
@@ -160,7 +149,6 @@ class Card:
         else: 
             Rectangle.draw_rect(Rectangle("Game's broken", color_black, 300, 300, 400, False))
     
-
 class Screen:
     def __init__(self, buttons, cards, score_current, result_games, result_game):
         self.buttons = buttons
@@ -187,8 +175,17 @@ class Screen:
 
 # FUNCTIONS
 
+def set_possible_outcomes(name_player):
+    possible_outcomes = ['', f'{name_player} is busted', f'{name_player} wins', 'Dealer wins', 'Draw']
+    outcome_lost = possible_outcomes[3]
+    outcome_win = possible_outcomes[2]
+    outcome_bust = possible_outcomes[1]
+    outcome_draw = possible_outcomes[4]
+    
+    return outcome_bust, outcome_lost, outcome_win, outcome_draw
+
 ## laad de afbeeldingen van de speelkaarten
-def deck_loader():
+def load_deck():
     try: 
         path = 'Project/Media/cards/'
         for filename in os.listdir(path):                                   # zoek in juiste map
@@ -202,7 +199,7 @@ def deck_loader():
         game_is_active = False
 
 def reset_game():
-    global cards_are_on_place, sound, game_deck, initial_deal, my_hand, dealer_hand, game_is_active, reveal_dealer, player_can_hit, result_round, add_score, dealer_score_round, player_score_round, card_player_start_y, card_dealer_start_y
+    global cards_are_in_place, sound, game_deck, initial_deal, my_hand, dealer_hand, game_is_active, reveal_dealer, player_can_hit, result_round, add_score, dealer_score_round, player_score_round, card_player_start_y, card_dealer_start_y
     # set variables
     game_is_active = True
     initial_deal = True                     # two cards
@@ -216,7 +213,7 @@ def reset_game():
     dealer_score_round = 0
     player_score_round = 0
     sound = True
-    cards_are_on_place = False
+    cards_are_in_place = False
     # reset cards naar outside 
     card_player_start_y = 1000
     card_dealer_start_y = -280
@@ -266,26 +263,15 @@ def draw_cards(player, dealer, reveal):
          card = Card("back", "card", i, card_dealer_start_y)
         Card.draw_card(card)
         
-# bereken de score.
-# [dn] dit werkt, maar het kan nog simpler
-# bvb (geen echte code) card = [rank, suits, value]
-# SUIT_SPACE = 3
-# [9, SUIT_SPADE, 9]
-# RANK_QUEEN = 12 
-# VALUE_QUEEN = 10
-# [RANK_QUEEN, SUIT_SPADE, VALUE_QUEEN]
+#calculate hand score fresh every time. check Aces
 def calculate_score(hand):
-    #calculate hand score fresh every time. check Aces
+    
     hand_score = 0
     aces_count = 0
     for i in range(len(hand)):
-        for j in range(8):                          # 2-9
-            if hand[i][0] == one_deck[j][0]:        # zoek enkel in de waardes.
-                hand_score += int(hand[i][0])
-        if hand[i][0] in ['10', 'Jack', 'Queen', 'King']:
-            hand_score += 10
-        elif hand[i][0] == 'A':
-            hand_score += 11
+        card_score = hand[i][2]
+        hand_score += card_score
+        if hand[i][0] == 'A':
             aces_count += 1
     
     while hand_score > 21 and aces_count > 0:
@@ -322,10 +308,6 @@ def draw_buttons (action):
 def play_sound(result):
     global sound
     if sound:
-        # [dn] ik ben fan van van variabel name, je merkt het
-        # waarom niet
-        # RESULT_LOST = 1
-        # if RESULT_LOST:
         if result == outcome_lost or result == outcome_bust:
             try:
                 pygame.mixer.music.load(lost_sound)
@@ -340,22 +322,23 @@ def play_sound(result):
                 print("Can't play success_sound")
     sound = False
 
+# Toon resultaat van ronde
 def show_result(result):
     global name_player
-    text_color = color_black
+    text_color = color_draw
     length = 140
     add_length_name = len(name_player)*15
     if result != 0:
         # tekst als spel klaar
         pygame.time.wait(600)
         if result == outcome_bust:
-            text_color = color_red
+            text_color = color_lost
             length = 320 + add_length_name
         elif result == outcome_win:
-            text_color = color_green
+            text_color = color_win
             length = 230 + add_length_name
         elif result == outcome_lost:
-            text_color = color_red
+            text_color = color_lost
             length = 270
             
 
@@ -418,7 +401,7 @@ def check_endgame(hand_act, deal_score, play_score, result, totals, add):
 def ask_reset(records):
     while True:
         # teken een rechthoek en vraag om de score te resetten
-        pygame.draw.rect(screen, color_green, (0, 0, WIDTH, HEIGHT- 60))
+        pygame.draw.rect(screen, color_green, (0, 0, WIDTH, HEIGHT-60))
         Rectangle.draw_rect(Rectangle("Reset scores?", color_black, 300, 300, 400, False))
         reset_button = Rectangle.draw_rect(Rectangle("RESET", color_red, 125, 400, 200, True))
         cancel_button = Rectangle.draw_rect(Rectangle("CANCEL", color_black, 450, 400, 200, True))
@@ -429,15 +412,12 @@ def ask_reset(records):
                 pygame.quit()
             
             if event.type == pygame.MOUSEMOTION:
-                hover = False
                 pygame.mouse.set_cursor(*pygame.cursors.tri_left)
                 if reset_button.collidepoint(event.pos) or cancel_button.collidepoint(event.pos):
-                        hover = True
-                if hover == True:
                     pygame.mouse.set_cursor(*pygame.cursors.diamond)
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
+            # klik op reset
+            if (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN) or (event.type == pygame.MOUSEBUTTONUP and reset_button.collidepoint(event.pos)):
                     with open("Project/scores.txt", "w") as f:
                         for i in range(3):
                             f.write("0\n")
@@ -445,19 +425,10 @@ def ask_reset(records):
                         records = f.read().splitlines()
                         records = [int(i) for i in records]
                     return records
-
-            # [dn] dit is wel veel repitie als bij keydown. waarom niet if button_down of key_down_return?
-            if event.type == pygame.MOUSEBUTTONUP:               
-                if reset_button.collidepoint(event.pos):
-                    with open("Project/scores.txt", "w") as f:
-                        for i in range(3):
-                            f.write("0\n")
-                    with open("Project/scores.txt", "r") as f:
-                        records = f.read().splitlines()
-                        records = [int(i) for i in records]
-                    return records
-                elif cancel_button.collidepoint(event.pos):
-                    return records
+            
+            # klik op cancel
+            elif (event.type == pygame.KEYDOWN and event.key == pygame.K_c) or event.type == pygame.MOUSEBUTTONUP and cancel_button.collidepoint(event.pos):
+                return records
                 
 def ask_name(name_player):
     while True:
@@ -476,16 +447,8 @@ def ask_name(name_player):
                 pygame.quit()
             
             if event.type == pygame.MOUSEMOTION:
-                hover = False
                 pygame.mouse.set_cursor(*pygame.cursors.tri_left)
-                
-                # [dn] if verwacht een boolean, je zet een boolean. Waarom niet 
-                #hover = answer_box.collidepoint(event.pos) or accept_button.collidepoint(event.pos)
                 if answer_box.collidepoint(event.pos) or accept_button.collidepoint(event.pos):
-                        hover = True
-
-                # [dn] dit is de enigne plaats waar je hover gebruikt
-                if hover == True:
                     pygame.mouse.set_cursor(*pygame.cursors.diamond)
             
             if event.type == pygame.KEYDOWN:
@@ -493,8 +456,8 @@ def ask_name(name_player):
                 if event.key == pygame.K_BACKSPACE:
                     name_player = name_player[:-1]
 
-                # Unicode standard is used for string
-                # formation
+                # Unicode standard is used for string formation
+                # naam speler mag niet meer dan 7 letters zijn.
                 elif len(name_player) < 7:
                     name_player += event.unicode
 
@@ -519,15 +482,15 @@ with open("Project/scores.txt", "r") as f:
     records = [int(i) for i in records]
 
 while run:
-    # [dn] hier staat wel veel branchy (binnen if statement) logic in. misschien properder het in een
-    # paar methodes te steken?
-    # run the game at fps & fill screen with bg-color
+    # [dn] hier staat wel veel branchy (binnen if statement) logic in. misschien properder het in een paar methodes te steken?
+    # run the game at fps & fill screen with bg-image or coolor.
     timer.tick(fps)
     try:
         screen.blit(background, (0, 0))
     except: 
+        print("Background_img laadt niet.")
         screen.fill(color_green)
-    deck = dict(deck_loader()) 
+    deck = dict(load_deck()) 
     
     #initial deal
     if initial_deal:
@@ -540,7 +503,7 @@ while run:
             my_hand, game_deck = deal_cards(my_hand, game_deck)
             dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
         initial_deal = False
-    #once game is activated & dealt > calculate scores & display cards
+    # once game is activated & dealt > calculate scores & display cards
     if game_is_active:
         player_score_round = calculate_score(my_hand)
         if reveal_dealer == True:
@@ -548,9 +511,9 @@ while run:
             if dealer_score_round < 17:
                 dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
         draw_cards(my_hand, dealer_hand, reveal_dealer)
-        cards_are_on_place = move_cards()
+        cards_are_in_place = move_cards()
         #check ending
-        if cards_are_on_place:
+        if cards_are_in_place:
             if player_can_hit and player_score_round >= 21:
                 player_can_hit = False
                 reveal_dealer = True
@@ -567,23 +530,21 @@ while run:
             pygame.mouse.set_cursor(*pygame.cursors.tri_left)
             for button in buttons:
                 if button.collidepoint(event.pos):
-                    hover = True
-            if hover == True:
-                pygame.mouse.set_cursor(*pygame.cursors.diamond)
+                    pygame.mouse.set_cursor(*pygame.cursors.diamond)
 
         if event.type == pygame.MOUSEBUTTONUP:               #start game bij klik op Deal
             pygame.mouse.set_cursor(*pygame.cursors.tri_left)
             if buttons[0].collidepoint(event.pos):
-                    records = ask_reset(records)    
+                records = ask_reset(records)    
             # play is 3 buttons: 0: reset, 1: hitme, 2: stand  
-            elif len(buttons) == 3 and cards_are_on_place:
+            elif len(buttons) == 3 and cards_are_in_place:
                 #you can hit
                 if buttons[1].collidepoint(event.pos) and player_score_round < 21 and player_can_hit:
                     try:
                         pygame.mixer.music.load(hitme_sound)
                         pygame.mixer.music.play()
                     except:
-                        print("no sound found")
+                        print("Can't play hitme_sound")
                     my_hand, game_deck = deal_cards(my_hand, game_deck)
                 #you can stand
                 elif buttons[2].collidepoint(event.pos) and not reveal_dealer:
@@ -597,28 +558,32 @@ while run:
                         pygame.mixer.music.load(hitme_sound)
                         pygame.mixer.music.play()
                     except:
-                        print("no sound found")
+                        print("Can't play hitme_sound")
                 
 
         if event.type == pygame.KEYDOWN:               #start game bij enter
             if len(buttons) == 2:
                 if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
-                    pygame.mixer.music.load(hitme_sound)
-                    pygame.mixer.music.play()
+                    try:
+                        pygame.mixer.music.load(hitme_sound)
+                        pygame.mixer.music.play()
+                    except:
+                        print("Can't play hitme_sound")
                     reset_game()
-            elif cards_are_on_place:
+            elif cards_are_in_place:
                 #you can hit
                 if event.key == pygame.K_h and player_score_round < 21 and player_can_hit:
-                    pygame.mixer.music.load(hitme_sound)
-                    pygame.mixer.music.play()
+                    try:
+                        pygame.mixer.music.load(hitme_sound)
+                        pygame.mixer.music.play()
+                    except:
+                        print("Can't play hitme_sound")
                     my_hand, game_deck = deal_cards(my_hand, game_deck)
                 #you can stand
                 elif event.key == pygame.K_s and not reveal_dealer:
                     reveal_dealer = True
                     player_can_hit = False
                 
-
-    
 
     result_round, records, add_score = check_endgame(player_can_hit, dealer_score_round, player_score_round, result_round, records, add_score)
     pygame.display.flip()       

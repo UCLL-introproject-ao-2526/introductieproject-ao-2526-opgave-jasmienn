@@ -1,6 +1,7 @@
-Totaal: 
-Tutorial: 2u
-Updating: 19u30
+## Totaal: 
+* Tutorial: 2u
+* Updating: 19u30
+* verwerken feedback: 1u30
 
 # 22/02
 
@@ -180,5 +181,25 @@ Todo when more time:
 Daan heeft feedback gegeven. Ik zal deze feedback verwerken.
 * de deck maken via loops ipv een lange list. Ik zie niet meteen de meerwaarde, tenzij een kaartspel zou veranderen. De tip om de rank en value los te maken van elkaar vind ik wel een meerwaarde.
 * Ik vind het een goede tip om design-kleur en programmeerkleur uit elkaar te trekken.
+
+## 12.00
+De main loop moet ik in methodes steken. Hier zit ik opnieuw vast met variabelen en denk ik dat ik een klasse moet maken, maar weet ik niet hoe ik het snel en proper kan oplossen. 
+
+## 12.30
+Ik ga de laatste opmerking niet verwerken omdat ik me nog niet ervaren genoeg voel met de methodes/objecten/klassen. 
+Omdat ik de feedbackronde uit het oog was verloren, zit ik ondertussen al boven de 20u waar ik niet boven mocht gaan. 
+
+Wat zou ik nog veranderen:
+* Ik zou de repititie nog willen verminderen in mijn code. Vooral alle event-verwerking is veel te lang.
+* Ik zou de naam van de speler samen met de score willen opslaan.
+* Ik zou het meer OOP willen programmeren, zodat de spellogica nog duidelijker wordt. 
+
+Wat ik al goed vind:
+* Alle functies bevatten een actie.
+* Ik heb de Challenges effectief gebruikt: Imagemagick, sneltoetsen in VS-code
+* Ik heb weer extra ervaring opgedaan en denk dat ik slimmere keuzes zal maken als ik opnieuw een spel/programma maak in python.
+
+Wat ik nog wil leren:
+* Ik hoop dat ik na programming 2 zal inzien wat ik nog beter had kunnen doen en dat ik dan comfortabeler ben met objecten.
 
 
