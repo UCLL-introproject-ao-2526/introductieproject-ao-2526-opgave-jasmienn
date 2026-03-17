@@ -21,11 +21,12 @@ pygame.init()                           #nodig voor font
 # e = diamond, q = spade, r = heart, w = club (dit komt door het lettertype)
 # [dn][ok] dit is nogal veel repititie. Misschien is er een manier dat je enkel de 4 'suits' 1 keer moet schrijven, end de 'rank' (1-10, jqk) ook? 
 suit_cards = ["Hearts", "Pikes", "Clovers", "Tiles"]
-values_cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King']
+rank_cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'A']
+values_cards = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
 one_deck = []
 for suit in suit_cards:
-    for value in values_cards:
-        one_deck += [[value, suit]]
+    for i in range(len(rank_cards)):
+        one_deck += [[rank_cards[i], suit, values_cards[i]]]
 
 decks = 4
 
@@ -82,9 +83,10 @@ reveal_dealer = False
 player_can_hit = False
 add_score = False
 name_player = ''
-result_round = 0 
 sound = True
 cards_are_on_place = False
+result_round = 0
+
 
 # startpositie kaarten
 card_player_start_y = 1000
@@ -95,6 +97,15 @@ card_speed = 0.3
 records = [0, 0, 0]
 player_score_round = 0
 dealer_score_round = 0 
+
+def set_possible_outcomes(name_player):
+    possible_outcomes = ['', f'{name_player} is busted', f'{name_player} wins', 'Dealer wins', 'Draw']
+    outcome_lost = possible_outcomes[3]
+    outcome_win = possible_outcomes[2]
+    outcome_bust = possible_outcomes[1]
+    outcome_draw = possible_outcomes[4]
+    
+    return outcome_bust, outcome_lost, outcome_win, outcome_draw
 
 # klasse voor buttons & info-rechthoeken
 class Rectangle:
@@ -191,7 +202,7 @@ def deck_loader():
         game_is_active = False
 
 def reset_game():
-    global cards_are_on_place, sound, game_deck, initial_deal, my_hand, dealer_hand, game_is_active, reveal_dealer, player_can_hit, result_round, add_score, results, dealer_score_round, player_score_round, card_player_start_y, card_dealer_start_y
+    global cards_are_on_place, sound, game_deck, initial_deal, my_hand, dealer_hand, game_is_active, reveal_dealer, player_can_hit, result_round, add_score, dealer_score_round, player_score_round, card_player_start_y, card_dealer_start_y
     # set variables
     game_is_active = True
     initial_deal = True                     # two cards
@@ -310,47 +321,45 @@ def draw_buttons (action):
 
 def play_sound(result):
     global sound
-    if sound == True: # [dn] of, in de volksmond, if sound: ;)
+    if sound:
         # [dn] ik ben fan van van variabel name, je merkt het
         # waarom niet
         # RESULT_LOST = 1
         # if RESULT_LOST:
-        if result == 1 or result == 3:
+        if result == outcome_lost or result == outcome_bust:
             try:
                 pygame.mixer.music.load(lost_sound)
                 pygame.mixer.music.play()
             except:
-                print("No sound found") # [dn] niet "no sound", dat betekent geen enkel geluid.
-                # waarom niet lost_sound printen dat je meer info hebt?
-        if result == 2:
+                print("Can't play lost_sound")
+        if result == outcome_win:
             try:
                 pygame.mixer.music.load(success_sound)
                 pygame.mixer.music.play()
             except:
-                print("No sound found")
+                print("Can't play success_sound")
     sound = False
 
 def show_result(result):
     global name_player
+    text_color = color_black
+    length = 140
+    add_length_name = len(name_player)*15
     if result != 0:
         # tekst als spel klaar
         pygame.time.wait(600)
-        # 1 = busted, 2 is win, 3 is lose, 4 is draw.
-        if result == 1:
+        if result == outcome_bust:
             text_color = color_red
-            # [dn] als ik deze methode lees, and ik zie length, heb ik geen idee waarvoor die dient
-            length = 320 + len(name_player)*15
-        elif result == 2:
+            length = 320 + add_length_name
+        elif result == outcome_win:
             text_color = color_green
-            length = 230 + len(name_player)*15
-        elif result == 3:
+            length = 230 + add_length_name
+        elif result == outcome_lost:
             text_color = color_red
             length = 270
-        elif result == 4:
-            text_color = color_black
-            length = 140
+            
 
-        Rectangle.draw_rect(Rectangle(results[result], text_color, 300, 260, length, False))
+        Rectangle.draw_rect(Rectangle(result, text_color, 300, 260, length, False))
         play_sound(result)
 
 def show_records():
@@ -376,23 +385,22 @@ def draw_game(act, records, result, hand_act):
     return button_list
 
 def check_endgame(hand_act, deal_score, play_score, result, totals, add):
-    # 1: busted 2: win 3: lose 4: draw [dn] in een variabele! dan zie je de naam ook waar het gebruikt word
     if not hand_act and deal_score >= 17:
         if play_score > 21:
-            result = 1
+            result = outcome_bust
         elif deal_score < play_score <= 21 or deal_score > 21:
-            result = 2
+            result = outcome_win
         elif play_score < deal_score <= 21:
-            result = 3
+            result = outcome_lost
         else:
-            result = 4
+            result = outcome_draw
 
         if add:
-            if result == 1 or result == 3:
+            if result == outcome_lost or result == outcome_bust:
                 totals[1] += 1
-            elif result == 2:
+            elif result == outcome_win:
                 totals[0] += 1
-            else:
+            elif result == outcome_draw:
                 totals[2] += 1
             add = False
 
@@ -526,15 +534,14 @@ while run:
         show_records()
         if name_player == '': 
             name_player = ask_name(name_player)
-            records = ask_reset(records)   
+            records = ask_reset(records)
+            outcome_bust, outcome_lost, outcome_win, outcome_draw = set_possible_outcomes(name_player)  
         for i in range(2):
             my_hand, game_deck = deal_cards(my_hand, game_deck)
             dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
         initial_deal = False
     #once game is activated & dealt > calculate scores & display cards
     if game_is_active:
-        
-        results = ['', f'{name_player} is busted', f'{name_player} wins', 'Dealer wins', 'Draw']
         player_score_round = calculate_score(my_hand)
         if reveal_dealer == True:
             dealer_score_round = calculate_score(dealer_hand)
