@@ -42,3 +42,7 @@ Say I buy an SSD drive that says 4TB, but I erroneously think it means 4TiB.
 How much percentage of the drive's storage will be "missing"?
 
 For example, if I expect 1200 bytes, and in reality it is only 1000 bytes, I am missing 200 bytes, or 16.7% of my expected capacity.
+
+4x 10^12
+4x2^40 
+398,046,511,104 / 4,398,046,511,104
